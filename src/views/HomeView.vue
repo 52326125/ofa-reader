@@ -11,7 +11,7 @@ const filter = ref('')
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
 
-const handleFilterClear = () => console.log(filter.value)
+const handleFilterClear = () => (filter.value = '')
 const filteredBooks = computed(() => {
   if (!books.value) return []
   if (!filter.value) return books.value
@@ -26,7 +26,7 @@ const filteredBooks = computed(() => {
         <span class="mdi mdi-close-circle-outline" />
       </BaseInput>
     </div>
-    <UploadButton> 上傳 </UploadButton>
+    <UploadButton />
   </div>
   <div class="book-list">
     <BookCard v-for="book in filteredBooks" :key="book.id" :book="book" />

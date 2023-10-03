@@ -3,12 +3,12 @@ import AppBar from '@/components/shared/appBar/AppBar.vue'
 </script>
 
 <template>
-  <main class="layout">
+  <div class="layout">
     <AppBar />
-    <div class="main">
+    <main class="main">
       <RouterView />
-    </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <style scoped lang="sass">
