@@ -8,7 +8,7 @@ interface UploadButtonEmit {
 
 const emit = defineEmits<UploadButtonEmit>()
 
-const inputRef = ref<HTMLElement | null>()
+const inputRef = ref<HTMLElement | null>(null)
 
 const handleClick = () => {
   if (!inputRef.value) return
