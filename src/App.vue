@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import AppBar from '@/components/shared/appBar/AppBar.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 </script>
 

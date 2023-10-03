@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { toRefs, type Ref } from 'vue'
+import { toRefs } from 'vue'
 
 defineOptions({
   inheritAttrs: false
 })
 
 interface BaseInputProps {
-  modelValue: Ref<string>
+  modelValue: string
   disabled?: boolean
   error?: boolean
   tip?: string
@@ -14,6 +14,7 @@ interface BaseInputProps {
 
 interface BaseInputEmit {
   (e: 'update:modelValue', value: string): void
+  (e: 'action-click'): void
 }
 
 const props = defineProps<BaseInputProps>()
@@ -23,6 +24,8 @@ const { disabled } = toRefs(props)
 const handleInput = (e: Event) => {
   emit('update:modelValue', (e.target as HTMLInputElement).value)
 }
+
+const handleActionClick = () => emit('action-click')
 </script>
 
 <template>
@@ -35,7 +38,7 @@ const handleInput = (e: Event) => {
         class="input"
         v-bind="$attrs"
       />
-      <div class="icon">
+      <div class="icon" @click="handleActionClick">
         <slot></slot>
       </div>
     </div>
@@ -90,6 +93,7 @@ const handleInput = (e: Event) => {
   padding: .5rem
   font-size: 24px
   transition: .3s all
+  cursor: pointer
   @extend %icon
 
 .tip

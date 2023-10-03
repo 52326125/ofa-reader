@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 import { useNotificationStore } from '@/stores/notification'
 import type { ProgressiveNotification } from '@/interface/notification'
 
-import BaseButton from '@/components/shared/base/BaseButton.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const notificationStore = useNotificationStore()
 const { remove } = notificationStore

@@ -2,7 +2,7 @@
 import { toRefs } from 'vue'
 import type { Book } from '@/interface/book'
 
-import BaseButton from '@/components/shared/base/BaseButton.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 interface BookProps {
   book: Book

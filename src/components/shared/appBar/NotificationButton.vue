@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
 
-import BaseButton from '@/components/shared/base/BaseButton.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 interface NotificationButtonProps {
   icon: string

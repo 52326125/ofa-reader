@@ -35,7 +35,7 @@ const typeSelector = computed(() => {
   </button>
 </template>
 
-<style lang="sass">
+<style scoped lang="sass">
 .btn
   display: flex
   justify-content: space-between
@@ -165,7 +165,8 @@ const typeSelector = computed(() => {
 .btn .icon
   display: flex
   align-items: center
-  font-size: 32px
+  font-size: 1.5rem
+  color: inherit
   @extend %icon
 
 .btn .text
