@@ -46,12 +46,12 @@ const handleInput = (e: Event) => {
 <style scoped lang="sass">
 .input-container
   min-width: 210px
-  height: 56px
   border: 1px solid $on-surface
   border-radius: 4px
   display: flex
-  padding: .25rem 0 .25rem 1rem
+  padding: .5rem 0 .5rem 1rem
   transition: .3s all
+  align-items: center
 
   &:has(.input:focus)
     border: 2px solid $primary
@@ -88,9 +88,9 @@ const handleInput = (e: Event) => {
 
 .icon
   padding: .5rem
-  line-height: 1
   font-size: 24px
   transition: .3s all
+  @extend %icon
 
 .tip
   font-size: .75rem

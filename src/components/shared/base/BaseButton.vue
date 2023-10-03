@@ -35,7 +35,7 @@ const typeSelector = computed(() => {
   </button>
 </template>
 
-<style scoped lang="sass">
+<style lang="sass">
 .btn
   display: flex
   justify-content: space-between
@@ -162,16 +162,16 @@ const typeSelector = computed(() => {
   &:disabled:focus
     opacity: 1
 
-.icon
+.btn .icon
   display: flex
   align-items: center
   font-size: 32px
   @extend %icon
 
-.text
+.btn .text
   text-align: center
   width: 100%
 
-.reverse
+.btn .reverse
   flex-direction: row-reverse
 </style>

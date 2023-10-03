@@ -34,8 +34,8 @@ const handleClick = () => emit('click')
   font-size: 32px
   color: $error
   position: absolute
-  right: -18px
-  top: -18px
+  right: -12px
+  top: -12px
   @extend %icon
 
 .mdi-bell

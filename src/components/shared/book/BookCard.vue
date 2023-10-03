@@ -32,7 +32,7 @@ const handleActionClick = (id: number) => emit('actionClick', id)
 
 <template>
   <button
-    class="container"
+    class="book-container"
     :class="{ disabled }"
     @click="handleSelect(id)"
     @dblclick="handleDbclick(id)"
@@ -62,7 +62,7 @@ const handleActionClick = (id: number) => emit('actionClick', id)
 </template>
 
 <style scoped lang="sass">
-.container
+.book-container
   width: 156px
   transition: .3s all
   background: none

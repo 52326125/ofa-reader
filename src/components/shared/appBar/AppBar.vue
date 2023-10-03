@@ -31,11 +31,11 @@ const toggleNotificationOpen = () =>
 
 <style scoped lang="sass">
 .container
+  box-sizing: border-box
   display: flex
-  width: 100vw
+  width: 100%
   justify-content: space-between
   align-items: center
-  position: relative
   padding: .5rem 1rem
   @extend %app-bar
 
