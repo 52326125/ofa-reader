@@ -6,7 +6,7 @@ import BaseButton from '@/components/base/BaseButton.vue'
 
 interface ChapterItemProps {
   chapters: Chapter[]
-  recursionTime: number
+  recursionTime?: number
 }
 
 const props = withDefaults(defineProps<ChapterItemProps>(), {

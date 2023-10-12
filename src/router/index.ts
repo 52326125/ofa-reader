@@ -12,8 +12,8 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/bookDetail/:id(\\d+)',
-      name: 'bookDetail',
+      path: '/book/detail/:id(\\d+)',
+      name: 'book-detail',
       component: BookDetailView
     }
   ]

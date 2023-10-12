@@ -3,11 +3,11 @@ export type BookType = 'local' | 'remote' | 'both'
 export interface Book {
   id: number
   title: string
-  description: string
-  creator: string
+  description?: string
+  creator?: string
   publisher?: string
   pubdate?: Date
-  language: string
+  language?: string
   cover: string
   type: BookType
   lastTime?: Date
