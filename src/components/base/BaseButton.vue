@@ -173,6 +173,6 @@ const typeSelector = computed(() => {
   text-align: center
   width: 100%
 
-.btn .reverse
+.btn.reverse
   flex-direction: row-reverse
 </style>

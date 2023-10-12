@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '@/views/HomeView.vue'
 import BookDetailView from '@/views/BookDetailView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,11 @@ const router = createRouter({
       path: '/book/detail/:id(\\d+)',
       name: 'book-detail',
       component: BookDetailView
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: NotFoundView
     }
   ]
 })
