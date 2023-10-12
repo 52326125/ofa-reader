@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
-
-interface BaseImgProps {
-  src?: string
-  alt?: string
-}
-
-const props = defineProps<BaseImgProps>()
-const { src } = toRefs(props)
+defineOptions({
+  inheritAttrs: false
+})
 </script>
 
 <template>
   <div class="img-container">
-    <img :src="src" :alt="alt" class="img" />
+    <img class="img" v-bind="$attrs" />
   </div>
 </template>
 
@@ -22,7 +16,7 @@ const { src } = toRefs(props)
 
 .img
   width: 100%
-  height: 100%
+  height: auto
   object-fit: cover
 
   &::before

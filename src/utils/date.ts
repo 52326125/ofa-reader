@@ -1,6 +1,9 @@
 import { format } from 'date-fns'
 
-export const formatSlash = (date: Date | undefined) => {
+export const formatDate = (
+  date: Date | undefined,
+  formatStr: string = 'yyyy/MM/dd'
+) => {
   if (!date) return '-'
-  return format(date, 'yyyy/MM/dd')
+  return format(date, formatStr)
 }
