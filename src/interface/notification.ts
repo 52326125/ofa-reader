@@ -2,7 +2,7 @@ export type NotificationType = 'progress' | 'description' | 'simple'
 
 interface BaseNotification<T> {
   id: number
-  cover: string
+  cover?: string
   title: string
   type: NotificationType
   cancel?: () => void

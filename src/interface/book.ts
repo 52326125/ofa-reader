@@ -8,7 +8,7 @@ export interface Book {
   publisher?: string
   pubdate?: Date
   language?: string
-  cover: string
+  cover?: string
   type: BookType
   lastTime?: Date
 }

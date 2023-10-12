@@ -3,8 +3,7 @@ import { ref, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
-import { safeString } from '@/utils/string'
-import moment from 'moment'
+import { display, displayDate } from '@/utils/string'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterItem from '@/components/shared/book/ChapterItem.vue'
@@ -14,7 +13,7 @@ const route = useRoute()
 const { id } = toRefs(route.params)
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
-const isBookCompleted = ref(true)
+const isBookCompleted = ref(false)
 
 const book = books.value?.find((book) => book.id === Number(id.value))
 </script>
@@ -29,10 +28,10 @@ const book = books.value?.find((book) => book.id === Number(id.value))
         <div class="book-pubdata">
           <div>
             <h1 class="title">{{ book.title }}</h1>
-            <p>作者：{{ safeString(book.creator) }}</p>
-            <p>出版社：{{ safeString(book.publisher) }}</p>
-            <p>出版日期：{{ safeString(moment(book.pubdate).format('l')) }}</p>
-            <p class="language">語言：{{ safeString(book.language) }}</p>
+            <p>作者：{{ display(book.creator) }}</p>
+            <p>出版社：{{ display(book.publisher) }}</p>
+            <p>出版日期：{{ displayDate(book.pubdate) }}</p>
+            <p class="language">語言：{{ display(book.language) }}</p>
           </div>
           <img
             :src="bookCompletedImg"
@@ -44,7 +43,7 @@ const book = books.value?.find((book) => book.id === Number(id.value))
         <div class="description" v-html="book.description" />
       </div>
       <p class="last-time" v-if="book.lastTime">
-        最後閱讀時間：{{ moment(book.lastTime).format('l') }}
+        最後閱讀時間：{{ displayDate(book.lastTime) }}
       </p>
       <div class="actions">
         <BaseButton type="primary">開始閱讀</BaseButton>
