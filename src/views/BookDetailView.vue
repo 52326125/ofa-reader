@@ -3,37 +3,40 @@ import { ref, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
-import { display, displayDate } from '@/utils/string'
+import { formatNullableString } from '@/utils/string'
+import { formatSlash } from '@/utils/date'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterItem from '@/components/shared/book/ChapterItem.vue'
 import bookCompletedImg from '@/assets/book_completed.png'
+import BaseImg from '@/components/base/BaseImg.vue'
 
 const route = useRoute()
 const { id } = toRefs(route.params)
+
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
-const isBookCompleted = ref(false)
-
 const book = books.value?.find((book) => book.id === Number(id.value))
+
+const isBookCompleted = ref(false)
 </script>
 
 <template>
   <div>
     <div class="book-info" v-if="book">
-      <div class="cover-container">
-        <img :src="book.cover" alt="cover" class="cover" />
-      </div>
+      <BaseImg :img="book.cover" />
       <div class="book-metadata">
         <div class="book-pubdata">
           <div>
             <h1 class="title">{{ book.title }}</h1>
-            <p>作者：{{ display(book.creator) }}</p>
-            <p>出版社：{{ display(book.publisher) }}</p>
-            <p>出版日期：{{ displayDate(book.pubdate) }}</p>
-            <p class="language">語言：{{ display(book.language) }}</p>
+            <p>作者：{{ formatNullableString(book.creator) }}</p>
+            <p>出版社：{{ formatNullableString(book.publisher) }}</p>
+            <p>出版日期：{{ formatSlash(book.pubdate) }}</p>
+            <p class="language">
+              語言：{{ formatNullableString(book.language) }}
+            </p>
           </div>
-          <img
+          <BaseImg
             :src="bookCompletedImg"
             alt="completed"
             class="book-completed"
@@ -43,7 +46,7 @@ const book = books.value?.find((book) => book.id === Number(id.value))
         <div class="description" v-html="book.description" />
       </div>
       <p class="last-time" v-if="book.lastTime">
-        最後閱讀時間：{{ displayDate(book.lastTime) }}
+        最後閱讀時間：{{ formatSlash(book.lastTime) }}
       </p>
       <div class="actions">
         <BaseButton type="primary">開始閱讀</BaseButton>
@@ -64,31 +67,10 @@ const book = books.value?.find((book) => book.id === Number(id.value))
 <style scoped lang="sass">
 .book-info
   display: grid
-  grid-template-columns: 248px auto
+  grid-template-columns: 248px 1fr
   grid-template-rows: 347px auto
   gap: 3rem 3.5rem
   margin-bottom: 3rem
-
-.cover-container
-  position: relative
-
-.cover
-  width: 100%
-  height: 100%
-  object-fit: cover
-
-  &::before
-    content: "\F02ED  cover not found"
-    font: normal normal normal 24px/1 "Material Design Icons"
-    display: flex
-    position: absolute
-    justify-content: center
-    align-items: center
-    top: 0
-    width: 100%
-    height: 100%
-    background-color: $neutral-50
-    color: white
 
 .actions
   grid-area: 2/2/3/3
@@ -110,10 +92,10 @@ const book = books.value?.find((book) => book.id === Number(id.value))
   height: 100%
   margin-top: -2.125rem
 
-.book-metadata p
+.book-pubdata p
   margin-bottom: .5rem
 
-.book-metadata .language
+.book-pubdata .language
   margin-bottom: 1rem
 
 .description
