@@ -2,3 +2,7 @@
   overflow: hidden
   white-space: nowrap
   text-overflow: ellipsis
+
+@each $color, $value in $colors
+  .text-#{$color}
+    color: $value

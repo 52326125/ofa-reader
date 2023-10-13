@@ -21,9 +21,6 @@ import BaseButton from '@/components/base/BaseButton.vue'
 h1
   font-size: 3rem
 
-.text-primary
-  color: $primary
-
 .container
   min-height: calc(100vh - 56px - 2.5rem)
   display: flex
