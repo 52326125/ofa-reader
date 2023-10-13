@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, toRefs } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
 import { formatNullableString } from '@/utils/string'
@@ -15,6 +15,8 @@ import bookCompletedImg from '@/assets/book_completed.png'
 const route = useRoute()
 const { id } = toRefs(route.params)
 
+const router = useRouter()
+
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
 
@@ -23,6 +25,8 @@ const isBookCompleted = ref(false)
 
 onMounted(() => {
   book.value = books.value?.find((book) => book.id === Number(id.value)) || null
+
+  if (!book.value) router.push('/404')
 })
 </script>
 
