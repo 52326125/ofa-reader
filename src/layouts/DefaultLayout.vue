@@ -14,14 +14,6 @@ import AppBar from '@/components/shared/appBar/AppBar.vue'
 </template>
 
 <style scoped lang="sass">
-.fade-enter-active,
-.fade-leave-active
-  transition: .3s all
-
-.fade-enter-from,
-.fade-leave-to
-  opacity: 0
-
 .layout
   min-height: 100vh
   background: $surface-container
