@@ -20,16 +20,18 @@ const filteredBooks = computed(() => {
 </script>
 
 <template>
-  <div class="tools">
-    <div class="input">
-      <BaseInput v-model="filter" @action-click="handleFilterClear">
-        <span class="mdi mdi-close-circle-outline" />
-      </BaseInput>
+  <div>
+    <div class="tools">
+      <div class="input">
+        <BaseInput v-model="filter" @action-click="handleFilterClear">
+          <span class="mdi mdi-close-circle-outline" />
+        </BaseInput>
+      </div>
+      <UploadButton />
     </div>
-    <UploadButton />
-  </div>
-  <div class="book-list">
-    <BookCard v-for="book in filteredBooks" :key="book.id" :book="book" />
+    <div class="book-list">
+      <BookCard v-for="book in filteredBooks" :key="book.id" :book="book" />
+    </div>
   </div>
 </template>
 

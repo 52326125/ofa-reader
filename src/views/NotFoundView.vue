@@ -18,9 +18,6 @@ import BaseButton from '@/components/base/BaseButton.vue'
 </template>
 
 <style scoped lang="sass">
-a
-  text-decoration: none
-
 h1
   font-size: 3rem
 
