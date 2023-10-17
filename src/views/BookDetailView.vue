@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
 import { formatNullableString } from '@/utils/string'
 import { formatDate } from '@/utils/date'
-import type { Book } from '@/interface/book'
+import type { Book, Chapter } from '@/interface/book'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterItem from '@/components/shared/book/ChapterItem.vue'
@@ -24,6 +24,7 @@ const { books } = storeToRefs(bookStore)
 const book = ref<Book | null>(null)
 const isBookCompleted = ref(false)
 const loading = ref(true)
+const chapters = ref<Chapter[]>([])
 
 onMounted(() => {
   book.value = books.value?.find((book) => book.id === Number(id.value)) || null
@@ -36,7 +37,7 @@ onMounted(() => {
   <div>
     <div class="book-info">
       <BaseImg :src="book?.cover" v-if="!loading" />
-      <BaseSkeleton v-else style="height: 100%" />
+      <BaseSkeleton v-else height="100%" />
       <div class="book-metadata">
         <div class="book-pubdata">
           <div v-if="!loading">
@@ -44,18 +45,13 @@ onMounted(() => {
             <p>作者：{{ formatNullableString(book?.creator) }}</p>
             <p>出版社：{{ formatNullableString(book?.publisher) }}</p>
             <p>出版日期：{{ formatDate(book?.pubdate) }}</p>
-            <p class="language">
-              語言：{{ formatNullableString(book?.language) }}
-            </p>
+            <p>語言：{{ formatNullableString(book?.language) }}</p>
           </div>
-          <div v-else class="book-pubdata-loading">
+          <div v-else class="book-pubdata__loading">
             <h1 class="title">
-              <BaseSkeleton style="height: 2.125rem" />
+              <BaseSkeleton height="2.125rem" />
             </h1>
-            <p v-for="i in 3" :key="i">
-              <BaseSkeleton />
-            </p>
-            <p class="language">
+            <p v-for="i in 4" :key="i">
               <BaseSkeleton />
             </p>
           </div>
@@ -85,7 +81,7 @@ onMounted(() => {
     <div class="chapter-container" v-if="!loading">
       <ChapterItem :chapters="chapters" />
     </div>
-    <BaseSkeleton v-else style="height: 200px" />
+    <BaseSkeleton v-else height="200px" />
   </div>
 </template>
 
@@ -111,12 +107,13 @@ onMounted(() => {
 .book-pubdata
   display: flex
   justify-content: space-between
+  margin-bottom: .5rem
+
+  &__loading
+    width: 300px
 
 .book-pubdata p
   margin-bottom: .5rem
-
-.book-pubdata .language
-  margin-bottom: 1rem
 
 .description
   flex: 1
@@ -125,9 +122,6 @@ onMounted(() => {
 
 .description :deep(p)
   margin-bottom: 1rem
-
-.book-pubdata-loading
-  width: 300px
 
 .last-time
   padding-left: .5rem
