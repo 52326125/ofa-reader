@@ -19,7 +19,6 @@ const { width, height } = toRefs(props)
 
 <style scoped lang="sass">
 .skeleton
-  overflow: hidden
   background: $neutral-80
   animation: skeleton-loading 1.5s infinite
 
