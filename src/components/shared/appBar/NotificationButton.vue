@@ -21,8 +21,10 @@ const handleClick = () => emit('click')
 
 <template>
   <BaseButton type="base-icon" class="notification" @click="handleClick">
-    <span :class="['mdi', `mdi-${icon}`]" />
-    <span class="mdi mdi-circle-medium" v-if="hasNotification" />
+    <template #icon>
+      <span :class="['mdi', `mdi-${icon}`]" />
+      <span class="mdi mdi-circle-medium" v-if="hasNotification" />
+    </template>
   </BaseButton>
 </template>
 
@@ -31,7 +33,6 @@ const handleClick = () => emit('click')
   position: relative
 
 .mdi-circle-medium
-  font-size: 32px
   color: $error
   position: absolute
   right: -12px
@@ -39,6 +40,5 @@ const handleClick = () => emit('click')
   @extend %icon
 
 .mdi-bell
-  font-size: 32px
   @extend %icon
 </style>

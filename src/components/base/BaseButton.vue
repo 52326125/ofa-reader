@@ -54,20 +54,14 @@ const typeSelector = computed(() => {
   border: 1px solid $neutral-variant-50
   color: $primary
 
-  &:hover
-    @extend %primary-hover
-
-  &:focus
+  &:hover,&:focus
     @extend %primary-hover
 
   &:disabled
     @extend %disabled
     border-color: rgba($on-surface, .12)
 
-  &:disabled:hover
-    background: none
-
-  &:disabled:focus
+  &:disabled:hover,&:disabled:focus
     background: none
 
 .btn-primary
@@ -75,21 +69,14 @@ const typeSelector = computed(() => {
   color: $on-primary
   border: 0
 
-  &:hover
-    @extend %btn-primary-focus
-
-  &:focus
+  &:hover,&:focus
     @extend %btn-primary-focus
 
   &:disabled
     @extend %disabled
     background: rgba($on-surface, .12)
 
-  &:disabled:hover
-    box-shadow: none
-    opacity: 1
-
-  &:disabled:focus
+  &:disabled:hover,&:disabled:focus
     box-shadow: none
     opacity: 1
 
@@ -98,19 +85,13 @@ const typeSelector = computed(() => {
   border: none
   color: $primary
 
-  &:hover
-    @extend %primary-hover
-
-  &:focus
+  &:hover,&:focus
     @extend %primary-hover
 
   &:disabled
     @extend %disabled
 
-  &:disabled:hover
-    background: none
-
-  &:disabled:focus
+  &:disabled:hover,&:disabled:focus
     background: none
 
 .btn-not-icon
@@ -124,20 +105,14 @@ const typeSelector = computed(() => {
   background: $primary
   color: $on-primary
 
-  &:hover
-    @extend %opacity-hover
-
-  &:focus
+  &:hover,&:focus
     @extend %opacity-hover
 
   &:disabled
     @extend %disabled
     background: rgba($on-surface, .12)
 
-  &:disabled:hover
-    opacity: 1
-
-  &:disabled:focus
+  &:disabled:hover,&:disabled:focus
     opacity: 1
 
 .btn-base-icon
@@ -146,26 +121,20 @@ const typeSelector = computed(() => {
   background: none
   border: none
 
-  &:hover
-    @extend %opacity-hover
-
-  &:focus
-    @extend %opacity-hover
+  &:hover,&:focus
+    background: $neutral-80
 
   &:disabled
     @extend %disabled
     background: rgba($on-surface, .12)
 
-  &:disabled:hover
-    opacity: 1
-
-  &:disabled:focus
-    opacity: 1
+  &:disabled:hover,&:disabled:focus
+    background: rgba($on-surface, .12)
 
 .btn .icon
   display: flex
   align-items: center
-  font-size: 1.5rem
+  font-size: 2rem
   color: inherit
   @extend %icon
 
