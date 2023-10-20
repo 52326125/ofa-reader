@@ -29,7 +29,13 @@ const handleUpload = (e: Event) => {
       <span class="mdi mdi-plus-circle-outline" />
     </template>
   </BaseButton>
-  <input type="file" class="input" ref="inputRef" @change="handleUpload" />
+  <input
+    type="file"
+    class="input"
+    ref="inputRef"
+    @change="handleUpload"
+    accept=".epub"
+  />
 </template>
 
 <style scoped lang="sass">
