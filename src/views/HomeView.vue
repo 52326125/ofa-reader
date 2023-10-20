@@ -2,6 +2,8 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
+import { primaryTable } from '@/data/primary'
+import { db } from '@/utils/db'
 
 import BaseInput from '@/components/base/BaseInput.vue'
 import BookCard from '@/components/shared/book/BookCard.vue'
@@ -50,3 +52,4 @@ const filteredBooks = computed(() => {
   gap: 2rem
   flex-wrap: wrap
 </style>
+@/utils/db/db
