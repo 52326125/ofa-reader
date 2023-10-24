@@ -53,7 +53,7 @@ const handleActionClick = () => emit('action-click')
   width: 210px
 
 .input-container
-  border: 1px solid $on-surface
+  box-shadow: 0 0 0 1px $outline
   border-radius: 4px
   display: flex
   padding: .5rem .75rem .5rem 1rem
@@ -63,7 +63,7 @@ const handleActionClick = () => emit('action-click')
   height: 56px
 
   &:has(.input:focus)
-    border: 2px solid $primary
+    box-shadow: 0 0 0 2px $primary
 
 .input
   padding: .5rem 0
@@ -88,7 +88,7 @@ const handleActionClick = () => emit('action-click')
 
 .error
   .input-container
-    border: 2px solid $error
+    box-shadow: 0 0 0 2px $error
   .icon
     color: $error
   .tip
@@ -96,7 +96,7 @@ const handleActionClick = () => emit('action-click')
 
 .disabled
   .input-container
-    border-color: rgba($on-surface, .12)
+    box-shadow: 0 0 0 1px rgba($on-surface, .12)
   input
     @extend %disabled
   .icon
@@ -107,7 +107,7 @@ const handleActionClick = () => emit('action-click')
 
 .dense
   .input-container
-    padding: .25rem .5rem .25rem .5rem
+    padding: .25rem .5rem
   input
     padding: 0
 
