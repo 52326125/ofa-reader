@@ -3,6 +3,7 @@ import { toRefs } from 'vue'
 import type { Book } from '@/interface/book'
 
 import BaseButton from '@/components/base/BaseButton.vue'
+import BaseImg from '@/components/base/BaseImg.vue'
 
 interface BookProps {
   book: Book
@@ -11,39 +12,40 @@ interface BookProps {
 }
 
 interface BookEmit {
-  (e: 'select', id: number): void
-  (e: 'dbclick', id: number): void
-  (e: 'actionClick', id: number): void
+  (e: 'select', id: string): void
+  (e: 'dbclick', id: string): void
+  (e: 'actionClick', id: string): void
 }
 
 const props = defineProps<BookProps>()
 const emit = defineEmits<BookEmit>()
 const { book, loading, disabled } = toRefs(props)
-const { id, title, cover, type } = toRefs(book.value)
+const { uid, title, cover, type } = toRefs(book.value)
 const icons = {
   remote: 'download',
   local: 'upload'
 }
 
-const handleSelect = (id: number) => emit('select', id)
-const handleDbclick = (id: number) => emit('dbclick', id)
-const handleActionClick = (id: number) => emit('actionClick', id)
+const handleSelect = (id: string) => emit('select', id)
+const handleDbclick = (id: string) => emit('dbclick', id)
+const handleActionClick = (id: string) => emit('actionClick', id)
 </script>
 
 <template>
   <button
     class="book-container"
     :class="{ disabled }"
-    @click="handleSelect(id)"
-    @dblclick="handleDbclick(id)"
+    @click="handleSelect(uid)"
+    @dblclick="handleDbclick(uid)"
   >
     <div class="cover-container">
-      <img :src="cover" class="cover" />
+      <!-- <img :src="cover" class="cover" /> -->
+      <BaseImg :src="cover" class="cover" />
       <BaseButton
         class="btn-float"
         type="icon"
         v-if="type !== 'both'"
-        @click.stop="handleActionClick(id)"
+        @click.stop="handleActionClick(uid)"
       >
         <template #icon>
           <span
@@ -80,7 +82,7 @@ const handleActionClick = (id: number) => emit('actionClick', id)
 .cover-container
   position: relative
 
-.cover
+:deep(.cover)
   height: 196px
   width: 100%
   object-fit: cover
@@ -94,7 +96,7 @@ const handleActionClick = (id: number) => emit('actionClick', id)
 .btn-float
   position: absolute
   left: .5rem
-  bottom: 1rem
+  bottom: .5rem
 
 .mdi
   color: $on-primary

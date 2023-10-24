@@ -4,32 +4,25 @@ import Dexie, { type Table } from 'dexie'
 export interface Primary {
   uid: string
   title: string
+  cover?: Blob
 }
 
 export interface Instance {
   uid: string
-  epub: Blob
+  epub: File
 }
 
-export type BookMetadata = Omit<Book, 'id' | 'type' | 'cover'>
+export type BookMetadata = Omit<Book, 'uid' | 'type' | 'cover'>
 
 export interface Metadata {
   uid: string
   data: BookMetadata
 }
 
-export interface Cover {
-  uid: string
-  data: Blob
-}
-
-// cover 與 primary 合併
-
 export class OfaReaderDB extends Dexie {
   primary!: Table<Primary>
   instance!: Table<Instance>
   metadata!: Table<Metadata>
-  cover!: Table<Cover>
 
   constructor() {
     super('OfaReaderDB')
@@ -37,8 +30,7 @@ export class OfaReaderDB extends Dexie {
     this.version(1).stores({
       primary: '&uid, title',
       instance: '&uid',
-      metadata: '&uid, data',
-      cover: '&uid'
+      metadata: '&uid, data'
     })
   }
 }
