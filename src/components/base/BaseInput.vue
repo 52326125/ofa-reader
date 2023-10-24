@@ -59,6 +59,8 @@ const handleActionClick = () => emit('action-click')
   padding: .5rem .75rem .5rem 1rem
   transition: .1s all
   align-items: center
+  box-sizing: border-box
+  height: 56px
 
   &:has(.input:focus)
     border: 2px solid $primary

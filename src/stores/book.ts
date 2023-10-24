@@ -11,7 +11,7 @@ export const useBookStore = defineStore('book', () => {
 
   const upload = async (book: Book, cancelHandler: () => void) => {
     setTimeout(() => {
-      const { title, cover, id } = book
+      const { title, cover, uid } = book
       const progress = 0
       const notification: CreationNotification<object> = {
         title,
@@ -19,7 +19,7 @@ export const useBookStore = defineStore('book', () => {
         type: 'progress',
         cancel: cancelHandler,
         payload: {
-          bookId: id,
+          bookId: uid,
           progress
         }
       }
@@ -30,7 +30,7 @@ export const useBookStore = defineStore('book', () => {
 
   const download = async (book: Book, cancelHandler: () => void) => {
     setTimeout(() => {
-      const { title, cover, id } = book
+      const { title, cover, uid } = book
       const progress = 0
       const notification: CreationNotification<object> = {
         title,
@@ -38,7 +38,7 @@ export const useBookStore = defineStore('book', () => {
         type: 'progress',
         cancel: cancelHandler,
         payload: {
-          bookId: id,
+          bookId: uid,
           progress
         }
       }
