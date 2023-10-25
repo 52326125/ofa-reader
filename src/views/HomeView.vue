@@ -17,16 +17,6 @@ const filter = ref('')
 
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
-const { upload } = bookStore
-
-const fetchData = async () => {
-  const localBooks = await primaryTable.get()
-  books.value = localBooks.map((_book) => ({
-    ..._book,
-    type: 'local',
-    cover: _book.cover ? URL.createObjectURL(_book.cover) : undefined
-  }))
-}
 
 const fetchData = async () => {
   const localBooks = await bookIntroTable.get()

@@ -10,7 +10,10 @@ interface BaseImgProps {
   height: string
 }
 
-const props = defineProps<BaseImgProps>()
+const props = withDefaults(defineProps<BaseImgProps>(), {
+  width: '100%',
+  height: 'auto'
+})
 const { width, height } = toRefs(props)
 </script>
 

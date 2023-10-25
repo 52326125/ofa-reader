@@ -22,7 +22,12 @@ const isInProgress = (notification: ProgressiveNotification) => {
       v-for="notification in notifications"
       :key="notification.id"
     >
-      <BaseImg :src="notification.cover" alt="cover" class="cover" />
+      <BaseImg
+        :src="notification.cover"
+        alt="cover"
+        width="40px"
+        height="56px"
+      />
       <div class="notification-info">
         <p class="notification-title ellipsis">{{ notification.title }}</p>
         <BaseButton
@@ -78,11 +83,6 @@ const isInProgress = (notification: ProgressiveNotification) => {
 .notification-remove
   grid-area: 1/2/1/3
   justify-self: right
-
-.cover
-  width: 40px
-  height: 56px
-  object-fit: cover
 
 .mdi-close
   font-size: 32px

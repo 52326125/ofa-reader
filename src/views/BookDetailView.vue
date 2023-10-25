@@ -27,7 +27,7 @@ const loading = ref(true)
 const chapters = ref<Chapter[]>([])
 
 onMounted(() => {
-  book.value = books.value?.find((book) => book.id === id.value) || null
+  book.value = books.value?.find((book) => book.uid === id.value) || null
   loading.value = false
   if (!book.value) router.push('/404')
 })
