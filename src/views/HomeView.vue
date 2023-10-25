@@ -17,6 +17,16 @@ const filter = ref('')
 
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
+const { upload } = bookStore
+
+const fetchData = async () => {
+  const localBooks = await primaryTable.get()
+  books.value = localBooks.map((_book) => ({
+    ..._book,
+    type: 'local',
+    cover: _book.cover ? URL.createObjectURL(_book.cover) : undefined
+  }))
+}
 
 const fetchData = async () => {
   const localBooks = await bookIntroTable.get()
@@ -109,5 +119,3 @@ onMounted(fetchData)
   gap: 2rem
   flex-wrap: wrap
 </style>
-@/data/indexedDB/primary@/data/indexedDB/instance@/data/indexedDB/metadata
-@/data/indexedDB/bookIntro@/data/indexedDB/bookFile
