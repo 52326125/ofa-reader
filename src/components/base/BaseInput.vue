@@ -66,8 +66,6 @@ const handleChange = (e: Event) => {
   padding: .5rem .75rem .5rem 1rem
   transition: .1s all
   align-items: center
-  box-sizing: border-box
-  height: 56px
 
   &:has(.input:focus)
     box-shadow: 0 0 0 2px $primary

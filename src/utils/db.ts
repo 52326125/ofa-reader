@@ -1,13 +1,14 @@
-import type { Book } from '@/interface/book'
 import Dexie, { type Table } from 'dexie'
+import type { Book } from '@/interface/book'
 
-export interface Primary {
+export interface BookIntro {
   uid: string
   title: string
   cover?: Blob
+  md5: string
 }
 
-export interface Instance {
+export interface BookFile {
   uid: string
   epub: File
 }
@@ -20,17 +21,17 @@ export interface Metadata {
 }
 
 export class OfaReaderDB extends Dexie {
-  primary!: Table<Primary>
-  instance!: Table<Instance>
+  bookIntro!: Table<BookIntro>
+  bookFile!: Table<BookFile>
   metadata!: Table<Metadata>
 
   constructor() {
     super('OfaReaderDB')
 
     this.version(1).stores({
-      primary: '&uid, title',
-      instance: '&uid',
-      metadata: '&uid, data'
+      bookIntro: '&uid, md5',
+      bookFile: '&uid',
+      metadata: '&uid'
     })
   }
 }

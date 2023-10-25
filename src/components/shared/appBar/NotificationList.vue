@@ -22,7 +22,6 @@ const isInProgress = (notification: ProgressiveNotification) => {
       v-for="notification in notifications"
       :key="notification.id"
     >
-      <!-- <img :src="notification.cover" alt="cover" class="cover" /> -->
       <BaseImg :src="notification.cover" alt="cover" class="cover" />
       <div class="notification-info">
         <p class="notification-title ellipsis">{{ notification.title }}</p>

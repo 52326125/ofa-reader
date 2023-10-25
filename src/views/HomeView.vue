@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useBookStore } from '@/stores/book'
-import { primaryTable } from '@/data/primary'
-import { instanceTable } from '@/data/instance'
-import { metadataTable } from '@/data/metadata'
 import epub from 'epubjs'
+import sparkMD5 from 'spark-md5'
+import { useBookStore } from '@/stores/book'
+import { bookIntroTable, type AddBookIntro } from '@/data/indexedDB/bookIntro'
+import { bookFileTable } from '@/data/indexedDB/bookFile'
+import { metadataTable } from '@/data/indexedDB/metadata'
+import type { BookMetadata } from '@/utils/db'
 
 import BaseInput from '@/components/base/BaseInput.vue'
 import BookCard from '@/components/shared/book/BookCard.vue'
@@ -15,10 +17,9 @@ const filter = ref('')
 
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
-const { upload } = bookStore
 
 const fetchData = async () => {
-  const localBooks = await primaryTable.get()
+  const localBooks = await bookIntroTable.get()
   books.value = localBooks.map((_book) => ({
     ..._book,
     type: 'local',
@@ -29,16 +30,17 @@ const fetchData = async () => {
 const handleFilterClear = () => (filter.value = '')
 const handleUpload = async (files: FileList) => {
   const file = files[0]
-  const fileType = file.name.split('.').pop()
 
-  if (fileType !== 'epub') return
+  if (file.type !== 'application/epub+zip') return
 
   const arrayBuffer = await file.arrayBuffer()
+  const spark = new sparkMD5.ArrayBuffer()
+  const md5 = spark.append(arrayBuffer).end()
   const book = epub(arrayBuffer)
-  const primaries = await primaryTable.get()
+  const intros = await bookIntroTable.get()
   const { title, description, creator, publisher, pubdate, language } =
     await book.loaded.metadata
-  const findBook = primaries.find((primary) => primary.title === title)
+  const findBook = intros.find((intro) => intro.md5 === md5)
 
   if (findBook) return
 
@@ -50,8 +52,8 @@ const handleUpload = async (files: FileList) => {
     cover = await response.blob()
   }
 
-  const newPrimary = { title, cover }
-  const newMetadata = {
+  const newBookIntro: AddBookIntro = { title, cover, md5 }
+  const newMetadata: BookMetadata = {
     title,
     description,
     creator,
@@ -60,9 +62,9 @@ const handleUpload = async (files: FileList) => {
     language
   }
 
-  await primaryTable.add(newPrimary)
-  instanceTable.add(file)
-  metadataTable.add(newMetadata)
+  const uid = await bookIntroTable.add(newBookIntro)
+  bookFileTable.add({ uid, epub: file })
+  metadataTable.add({ uid, data: newMetadata })
 
   fetchData()
 }
@@ -73,9 +75,7 @@ const filteredBooks = computed(() => {
   return books.value.filter((book) => book.title.includes(filter.value))
 })
 
-onMounted(() => {
-  fetchData()
-})
+onMounted(fetchData)
 </script>
 
 <template>
@@ -86,7 +86,7 @@ onMounted(() => {
           <span class="mdi mdi-close-circle-outline" />
         </BaseInput>
       </div>
-      <UploadButton @upload="handleUpload" />
+      <UploadButton @upload="handleUpload" accept=".epub" />
     </div>
     <div class="book-list">
       <BookCard v-for="book in filteredBooks" :key="book.uid" :book="book" />
@@ -109,3 +109,5 @@ onMounted(() => {
   gap: 2rem
   flex-wrap: wrap
 </style>
+@/data/indexedDB/primary@/data/indexedDB/instance@/data/indexedDB/metadata
+@/data/indexedDB/bookIntro@/data/indexedDB/bookFile

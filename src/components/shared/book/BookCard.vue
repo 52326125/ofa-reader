@@ -12,9 +12,9 @@ interface BookProps {
 }
 
 interface BookEmit {
-  (e: 'select', id: string): void
-  (e: 'dbclick', id: string): void
-  (e: 'actionClick', id: string): void
+  (e: 'select', uid: string): void
+  (e: 'dbclick', uid: string): void
+  (e: 'actionClick', uid: string): void
 }
 
 const props = defineProps<BookProps>()
@@ -26,9 +26,9 @@ const icons = {
   local: 'upload'
 }
 
-const handleSelect = (id: string) => emit('select', id)
-const handleDbclick = (id: string) => emit('dbclick', id)
-const handleActionClick = (id: string) => emit('actionClick', id)
+const handleSelect = (uid: string) => emit('select', uid)
+const handleDbclick = (uid: string) => emit('dbclick', uid)
+const handleActionClick = (uid: string) => emit('actionClick', uid)
 </script>
 
 <template>
@@ -39,8 +39,12 @@ const handleActionClick = (id: string) => emit('actionClick', id)
     @dblclick="handleDbclick(uid)"
   >
     <div class="cover-container">
-      <!-- <img :src="cover" class="cover" /> -->
-      <BaseImg :src="cover" class="cover" />
+      <BaseImg
+        :src="cover"
+        width="100%"
+        height="196px"
+        :style="{ opacity: disabled ? 0.7 : 1 }"
+      />
       <BaseButton
         class="btn-float"
         type="icon"
@@ -81,11 +85,6 @@ const handleActionClick = (id: string) => emit('actionClick', id)
 
 .cover-container
   position: relative
-
-:deep(.cover)
-  height: 196px
-  width: 100%
-  object-fit: cover
 
 .title
   display: block
