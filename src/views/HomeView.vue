@@ -2,7 +2,6 @@
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import epub from 'epubjs'
-import sparkMD5 from 'spark-md5'
 import { useBookStore } from '@/stores/book'
 import { bookIntroTable, type AddBookIntro } from '@/data/indexedDB/bookIntro'
 import { bookFileTable } from '@/data/indexedDB/bookFile'
@@ -13,14 +12,12 @@ import BaseInput from '@/components/base/BaseInput.vue'
 import BookCard from '@/components/shared/book/BookCard.vue'
 import UploadButton from '@/components/shared/UploadButton.vue'
 import { arrayBufferMD5 } from '@/utils/hash'
-import { arrayBuffer } from 'stream/consumers'
+import { EPUB_TYPE } from '@/utils/mimeType'
 
 const filter = ref('')
 
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
-
-const EPUB_TYPE = 'application/epub+zip'
 
 const fetchData = async () => {
   const localBooks = await bookIntroTable.get()
@@ -36,10 +33,9 @@ const handleFilterClear = () => (filter.value = '')
 const getBookData = async (arrayBuffer: ArrayBuffer) => {
   const md5 = arrayBufferMD5(arrayBuffer)
   const book = epub(arrayBuffer)
-  const intros = await bookIntroTable.get()
   const { title, description, creator, publisher, pubdate, language } =
     await book.loaded.metadata
-  const metadata = {
+  const metadata: BookMetadata = {
     title,
     description,
     creator,
@@ -47,49 +43,6 @@ const getBookData = async (arrayBuffer: ArrayBuffer) => {
     pubdate: pubdate ? new Date(pubdate) : undefined,
     language
   }
-  return {
-    md5,
-    book,
-    intros,
-    metadata
-  }
-}
-
-const addIndexedDB = async (
-  metadata: BookMetadata,
-  cover: Blob | undefined,
-  md5: string,
-  file: File
-) => {
-  const { title, description, creator, publisher, pubdate, language } = metadata
-  const newBookIntro: AddBookIntro = { title, cover, md5 }
-  const newMetadata: BookMetadata = {
-    title,
-    description,
-    creator,
-    publisher,
-    pubdate: pubdate ? new Date(pubdate) : undefined,
-    language
-  }
-
-  const uid = await bookIntroTable.add(newBookIntro)
-  bookFileTable.add({ uid, epub: file })
-  metadataTable.add({ uid, data: newMetadata })
-
-  fetchData()
-}
-
-const handleUpload = async (files: FileList) => {
-  const file = files[0]
-
-  if (file.type !== EPUB_TYPE) return
-
-  const arrayBuffer = await file.arrayBuffer()
-  const { md5, book, intros, metadata } = await getBookData(arrayBuffer)
-  const findBook = intros.find((intro) => intro.md5 === md5)
-
-  if (findBook) return
-
   const coverUrl = (await book.coverUrl()) ?? undefined
   let cover: Blob | undefined
 
@@ -98,7 +51,38 @@ const handleUpload = async (files: FileList) => {
     cover = await response.blob()
   }
 
+  return { md5, book, metadata, cover }
+}
+
+const addIndexedDB = async (
+  metadata: BookMetadata,
+  cover: Blob | undefined,
+  md5: string,
+  file: File
+) => {
+  const { title } = metadata
+  const newBookIntro: AddBookIntro = { title, cover, md5 }
+
+  const uid = await bookIntroTable.add(newBookIntro)
+  bookFileTable.add({ uid, epub: file })
+  metadataTable.add({ uid, data: metadata })
+}
+
+const handleUpload = async (files: FileList) => {
+  const file = files[0]
+
+  if (file.type !== EPUB_TYPE) return
+
+  const arrayBuffer = await file.arrayBuffer()
+  const { md5, metadata, cover } = await getBookData(arrayBuffer)
+  const intros = await bookIntroTable.get()
+  const findBook = intros.find((intro) => intro.md5 === md5)
+
+  if (findBook) return
+
   await addIndexedDB(metadata, cover, md5, file)
+
+  fetchData()
 }
 
 const filteredBooks = computed(() => {
