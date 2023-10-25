@@ -19,7 +19,7 @@ const router = createRouter({
       component: BookDetailView
     },
     {
-      path: '/book/:id(\\d+)',
+      path: '/book/:id',
       name: 'reader',
       component: BookReader
     },

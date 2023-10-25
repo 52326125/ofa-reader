@@ -134,9 +134,12 @@ const typeSelector = computed(() => {
 .btn .icon
   display: flex
   align-items: center
-  font-size: 2rem
+  font-size: 1.5rem
   color: inherit
   @extend %icon
+
+.btn-icon,.btn-base-icon .icon
+  font-size: 2rem
 
 .btn .text
   text-align: center
