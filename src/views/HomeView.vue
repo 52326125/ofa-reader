@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import epub from 'epubjs'
+import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/book'
 import { bookIntroTable, type AddBookIntro } from '@/data/indexedDB/bookIntro'
 import { bookFileTable } from '@/data/indexedDB/bookFile'
@@ -11,10 +12,13 @@ import type { BookMetadata } from '@/utils/db'
 import BaseInput from '@/components/base/BaseInput.vue'
 import BookCard from '@/components/shared/book/BookCard.vue'
 import UploadButton from '@/components/shared/UploadButton.vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 import { arrayBufferMD5 } from '@/utils/hash'
 import { EPUB_TYPE } from '@/utils/mimeType'
 
 const filter = ref('')
+
+const router = useRouter()
 
 const bookStore = useBookStore()
 const { books } = storeToRefs(bookStore)
@@ -85,6 +89,8 @@ const handleUpload = async (files: FileList) => {
   fetchData()
 }
 
+const handleSelect = (uid: string) => router.push(`/book/detail/${uid}`)
+
 const filteredBooks = computed(() => {
   if (!books.value) return []
   if (!filter.value) return books.value
@@ -95,7 +101,7 @@ onMounted(fetchData)
 </script>
 
 <template>
-  <div>
+  <!-- <div>
     <div class="tools">
       <div class="input">
         <BaseInput v-model="filter" @action-click="handleFilterClear">
@@ -109,13 +115,47 @@ onMounted(fetchData)
         v-for="book in filteredBooks"
         :key="book.uid"
         :book="book"
-        @select="
-          () => {
-            $router.push(`/book/detail/${book.uid}`)
-          }
-        "
+        @select="handleSelect(book.uid)"
       />
     </div>
+  </div> -->
+  <div style="display: flex; gap: 1rem">
+    <BaseButton>
+      outline
+      <template #icon>
+        <span class="mdi mdi-home" />
+      </template>
+    </BaseButton>
+    <BaseButton disabled>
+      outline
+      <template #icon>
+        <span class="mdi mdi-home" />
+      </template>
+    </BaseButton>
+    <BaseButton type="primary">primary</BaseButton>
+    <BaseButton type="primary" disabled>primary</BaseButton>
+    <BaseButton type="text">text</BaseButton>
+    <BaseButton type="text" disabled>text</BaseButton>
+    <BaseButton type="icon">
+      <template #icon>
+        <span class="mdi mdi-home" />
+      </template>
+    </BaseButton>
+    <BaseButton type="icon" disabled>
+      <template #icon>
+        <span class="mdi mdi-home" />
+      </template>
+    </BaseButton>
+    <BaseButton type="base-icon">
+      <template #icon>
+        <span class="mdi mdi-home" />
+      </template>
+    </BaseButton>
+    <BaseButton type="base-icon" disabled>
+      <template #icon>
+        <span class="mdi mdi-home" />
+      </template>
+    </BaseButton>
   </div>
 </template>
 

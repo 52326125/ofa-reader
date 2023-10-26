@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Epub from 'epubjs'
+import Epub, { type NavItem } from 'epubjs'
+import type { Book } from '@/interface/book'
 import { formatNullableString } from '@/utils/string'
 import { formatDate } from '@/utils/date'
-import type { Book, Chapter } from '@/interface/book'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterItem from '@/components/shared/book/ChapterItem.vue'
@@ -24,8 +24,16 @@ const router = useRouter()
 const book = ref<Omit<Book, 'type'> | null>(null)
 const isBookCompleted = ref(false)
 const loading = ref(true)
-const chapters = ref<Chapter[]>([])
-const epubUrl = ref('')
+const chapters = ref<NavItem[]>([])
+const epubInfo = ref<{ href: string; download: string } | null>(null)
+
+const flatChapter = (chapter: NavItem) => {
+  chapters.value.push(chapter)
+
+  if (chapter.subitems) {
+    chapter.subitems.forEach((subitem) => flatChapter(subitem))
+  }
+}
 
 const fetchData = async () => {
   const localIntro = await bookIntroTable.getByUid(id)
@@ -44,12 +52,15 @@ const fetchData = async () => {
   }
 
   if (localFile) {
-    epubUrl.value = URL.createObjectURL(localFile.epub)
+    epubInfo.value = {
+      href: URL.createObjectURL(localFile.epub),
+      download: localFile.epub.name
+    }
     const arrayBuffer = await localFile.epub.arrayBuffer()
     const epub = Epub(arrayBuffer)
     const navigation = await epub.loaded.navigation
     navigation.forEach((chapter) => {
-      chapters.value.push(chapter)
+      flatChapter(chapter)
       return {}
     })
   }
@@ -101,7 +112,7 @@ onMounted(async () => {
         <RouterLink :to="`/book/${book?.uid}`">
           <BaseButton type="primary" :disabled="loading">開始閱讀</BaseButton>
         </RouterLink>
-        <DownloadButton :href="epubUrl" />
+        <DownloadButton :href="epubInfo?.href" :download="epubInfo?.download" />
       </div>
     </div>
     <div class="chapter-container" v-if="!loading">

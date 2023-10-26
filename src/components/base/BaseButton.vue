@@ -47,7 +47,7 @@ const typeSelector = computed(() => {
   height: 40px
   transition: .3s all
   cursor: pointer
-  font-weight: 500
+  line-height: 1.5rem
 
 .btn-outline
   background: none
