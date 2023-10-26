@@ -138,7 +138,7 @@ const typeSelector = computed(() => {
   color: inherit
   @extend %icon
 
-.btn-icon,.btn-base-icon .icon
+.btn-icon .icon,.btn-base-icon .icon
   font-size: 2rem
 
 .btn .text

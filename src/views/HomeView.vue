@@ -105,7 +105,16 @@ onMounted(fetchData)
       <UploadButton @upload="handleUpload" :accept="EPUB_TYPE" />
     </div>
     <div class="book-list">
-      <BookCard v-for="book in filteredBooks" :key="book.uid" :book="book" />
+      <BookCard
+        v-for="book in filteredBooks"
+        :key="book.uid"
+        :book="book"
+        @select="
+          () => {
+            $router.push(`/book/detail/${book.uid}`)
+          }
+        "
+      />
     </div>
   </div>
 </template>
