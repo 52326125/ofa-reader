@@ -101,7 +101,7 @@ onMounted(fetchData)
 </script>
 
 <template>
-  <!-- <div>
+  <div>
     <div class="tools">
       <div class="input">
         <BaseInput v-model="filter" @action-click="handleFilterClear">
@@ -118,44 +118,6 @@ onMounted(fetchData)
         @select="handleSelect(book.uid)"
       />
     </div>
-  </div> -->
-  <div style="display: flex; gap: 1rem">
-    <BaseButton>
-      outline
-      <template #icon>
-        <span class="mdi mdi-home" />
-      </template>
-    </BaseButton>
-    <BaseButton disabled>
-      outline
-      <template #icon>
-        <span class="mdi mdi-home" />
-      </template>
-    </BaseButton>
-    <BaseButton type="primary">primary</BaseButton>
-    <BaseButton type="primary" disabled>primary</BaseButton>
-    <BaseButton type="text">text</BaseButton>
-    <BaseButton type="text" disabled>text</BaseButton>
-    <BaseButton type="icon">
-      <template #icon>
-        <span class="mdi mdi-home" />
-      </template>
-    </BaseButton>
-    <BaseButton type="icon" disabled>
-      <template #icon>
-        <span class="mdi mdi-home" />
-      </template>
-    </BaseButton>
-    <BaseButton type="base-icon">
-      <template #icon>
-        <span class="mdi mdi-home" />
-      </template>
-    </BaseButton>
-    <BaseButton type="base-icon" disabled>
-      <template #icon>
-        <span class="mdi mdi-home" />
-      </template>
-    </BaseButton>
   </div>
 </template>
 
