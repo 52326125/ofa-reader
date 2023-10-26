@@ -44,14 +44,13 @@ const typeSelector = computed(() => {
   box-sizing: border-box
   border-radius: 10px
   flex-shrink: 0
-  height: 40px
   transition: .3s all
   cursor: pointer
-  line-height: 1.5rem
+  border: none
 
 .btn-outline
   background: none
-  border: 1px solid $neutral-variant-50
+  @include border-shadow(1px, $neutral-variant-50)
   color: $primary
 
   &:hover,&:focus
@@ -59,7 +58,7 @@ const typeSelector = computed(() => {
 
   &:disabled
     @extend %disabled
-    border-color: rgba($on-surface, .12)
+    @include border-shadow(1px, rgba($on-surface, .12))
 
   &:disabled:hover,&:disabled:focus
     background: none
@@ -67,7 +66,6 @@ const typeSelector = computed(() => {
 .btn-primary
   background: $primary
   color: $on-primary
-  border: 0
 
   &:hover,&:focus
     @extend %btn-primary-focus
@@ -82,7 +80,6 @@ const typeSelector = computed(() => {
 
 .btn-text
   background: none
-  border: none
   color: $primary
 
   &:hover,&:focus
@@ -101,7 +98,6 @@ const typeSelector = computed(() => {
 .btn-icon
   padding: .25rem
   width: 40px
-  border: none
   background: $primary
   color: $on-primary
 
@@ -119,7 +115,6 @@ const typeSelector = computed(() => {
   padding: .25rem
   width: 40px
   background: none
-  border: none
 
   &:hover,&:focus
     background: $neutral-80
@@ -144,6 +139,7 @@ const typeSelector = computed(() => {
 .btn .text
   text-align: center
   width: 100%
+  line-height: 1.5rem
 
 .btn.reverse
   flex-direction: row-reverse

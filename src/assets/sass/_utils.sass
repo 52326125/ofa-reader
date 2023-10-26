@@ -9,3 +9,6 @@
 @each $color, $value in $colors
   .text-#{$color}
     color: $value
+
+@mixin border-shadow($width, $color)
+  box-shadow: 0 0 0 $width $color
