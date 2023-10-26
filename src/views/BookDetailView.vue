@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, toRefs } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useBookStore } from '@/stores/book'
+import Epub from 'epubjs'
 import { formatNullableString } from '@/utils/string'
 import { formatDate } from '@/utils/date'
 import type { Book, Chapter } from '@/interface/book'
@@ -11,23 +10,53 @@ import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterItem from '@/components/shared/book/ChapterItem.vue'
 import BaseImg from '@/components/base/BaseImg.vue'
 import BaseSkeleton from '@/components/base/BaseSkeleton.vue'
+import DownloadButton from '@/components/shared/DownloadButton.vue'
 import bookCompletedImg from '@/assets/book_completed.png'
+import { metadataTable } from '@/data/indexedDB/metadata'
+import { bookIntroTable } from '@/data/indexedDB/bookIntro'
+import { bookFileTable } from '@/data/indexedDB/bookFile'
 
 const route = useRoute()
-const { id } = toRefs(route.params)
+const id = route.params.id as string
 
 const router = useRouter()
 
-const bookStore = useBookStore()
-const { books } = storeToRefs(bookStore)
-
-const book = ref<Book | null>(null)
+const book = ref<Omit<Book, 'type'> | null>(null)
 const isBookCompleted = ref(false)
 const loading = ref(true)
 const chapters = ref<Chapter[]>([])
+const epubUrl = ref('')
 
-onMounted(() => {
-  book.value = books.value?.find((book) => book.uid === id.value) || null
+const fetchData = async () => {
+  const localIntro = await bookIntroTable.getByUid(id)
+  const localMetadata = await metadataTable.get(id)
+  const localFile = await bookFileTable.get(id)
+
+  if (localIntro) {
+    const { title, cover } = localIntro
+
+    book.value = {
+      uid: id,
+      title,
+      cover: cover ? URL.createObjectURL(cover) : undefined,
+      ...localMetadata?.data
+    }
+  }
+
+  if (localFile) {
+    epubUrl.value = URL.createObjectURL(localFile.epub)
+    const arrayBuffer = await localFile.epub.arrayBuffer()
+    const epub = Epub(arrayBuffer)
+    const navigation = await epub.loaded.navigation
+    navigation.forEach((chapter) => {
+      chapters.value.push(chapter)
+      return {}
+    })
+  }
+}
+
+onMounted(async () => {
+  await fetchData()
   loading.value = false
   if (!book.value) router.push('/404')
 })
@@ -69,13 +98,10 @@ onMounted(() => {
       </p>
       <BaseSkeleton v-if="loading" />
       <div class="actions">
-        <BaseButton type="primary" :disabled="loading">開始閱讀</BaseButton>
-        <BaseButton type="primary" :disabled="loading">
-          匯出
-          <template #icon>
-            <span class="mdi mdi-file" />
-          </template>
-        </BaseButton>
+        <RouterLink :to="`/book/${book?.uid}`">
+          <BaseButton type="primary" :disabled="loading">開始閱讀</BaseButton>
+        </RouterLink>
+        <DownloadButton :href="epubUrl" />
       </div>
     </div>
     <div class="chapter-container" v-if="!loading">

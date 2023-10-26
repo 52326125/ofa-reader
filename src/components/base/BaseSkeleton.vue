@@ -2,8 +2,8 @@
 import { toRefs } from 'vue'
 
 interface BaseSkeletonProps {
-  width: string
-  height: string
+  width?: string
+  height?: string
 }
 
 const props = withDefaults(defineProps<BaseSkeletonProps>(), {

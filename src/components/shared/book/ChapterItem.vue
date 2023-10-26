@@ -6,34 +6,29 @@ import BaseButton from '@/components/base/BaseButton.vue'
 
 interface ChapterItemProps {
   chapters: Chapter[]
-  recursionTime?: number
 }
 
-const props = withDefaults(defineProps<ChapterItemProps>(), {
-  recursionTime: 0
-})
-const { chapters, recursionTime } = toRefs(props)
+const props = defineProps<ChapterItemProps>()
+const { chapters } = toRefs(props)
 </script>
 
 <template>
-  <div :style="{ marginLeft: `${recursionTime}rem` }">
-    <div class="chapter-list">章節列表</div>
+  <div v-for="chapter in chapters" :key="chapter.id">
+    <div class="chapter-list">{{ chapter.label }}</div>
     <div class="chapter-item">
       <BaseButton
-        v-for="chapter in chapters"
-        :key="chapter.id"
         @click="chapter.href"
+        v-if="!chapter.subitems || chapter.subitems.length < 1"
       >
         {{ chapter.label }}
       </BaseButton>
+      <div
+        style="margin-left: 1rem; width: 100%"
+        v-if="chapter.subitems && chapter.subitems.length > 0"
+      >
+        <ChapterItem :chapters="chapter.subitems" />
+      </div>
     </div>
-  </div>
-  <div v-for="chapter in chapters" :key="chapter.id">
-    <ChapterItem
-      v-if="chapter.subItems"
-      :chapters="chapter.subItems"
-      :recursion-time="recursionTime + 1"
-    />
   </div>
 </template>
 
@@ -43,7 +38,8 @@ const { chapters, recursionTime } = toRefs(props)
   margin-bottom: .5rem
 
 .chapter-item
-  padding: .5rem 1rem 1rem 1rem
+  padding: .5rem 0 1rem 1rem
   display: flex
   gap: 1rem
+  flex-wrap: wrap
 </style>

@@ -26,8 +26,9 @@ export interface AddBook {
 }
 
 export interface Chapter {
-  id: number
+  id: string
   href: string
   label: string
-  subItems?: Chapter[]
+  subitems?: Chapter[]
+  parent?: string
 }

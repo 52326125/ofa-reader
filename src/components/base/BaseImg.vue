@@ -6,8 +6,8 @@ defineOptions({
 })
 
 interface BaseImgProps {
-  width: string
-  height: string
+  width?: string
+  height?: string
 }
 
 const props = withDefaults(defineProps<BaseImgProps>(), {
