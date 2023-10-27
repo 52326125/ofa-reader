@@ -50,7 +50,7 @@ const typeSelector = computed(() => {
 
 .btn-outline
   background: none
-  @include border-shadow(1px, $neutral-variant-50)
+  @include border-shadow(1px, $outline)
   color: $primary
 
   &:hover,&:focus

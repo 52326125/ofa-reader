@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import epub from 'epubjs'
 import { useRouter } from 'vue-router'
+import type { Book } from 'epubjs'
 import { useBookStore } from '@/stores/book'
 import { bookIntroTable, type AddBookIntro } from '@/data/indexedDB/bookIntro'
 import { bookFileTable } from '@/data/indexedDB/bookFile'
@@ -12,9 +12,9 @@ import type { BookMetadata } from '@/utils/db'
 import BaseInput from '@/components/base/BaseInput.vue'
 import BookCard from '@/components/shared/book/BookCard.vue'
 import UploadButton from '@/components/shared/UploadButton.vue'
-import BaseButton from '@/components/base/BaseButton.vue'
 import { arrayBufferMD5 } from '@/utils/hash'
 import { EPUB_TYPE } from '@/utils/mimeType'
+import { analysisEpub } from '@/utils/epub'
 
 const filter = ref('')
 
@@ -34,9 +34,8 @@ const fetchData = async () => {
 
 const handleFilterClear = () => (filter.value = '')
 
-const getBookData = async (arrayBuffer: ArrayBuffer) => {
+const getBookData = async (arrayBuffer: ArrayBuffer, book: Book) => {
   const md5 = arrayBufferMD5(arrayBuffer)
-  const book = epub(arrayBuffer)
   const { title, description, creator, publisher, pubdate, language } =
     await book.loaded.metadata
   const metadata: BookMetadata = {
@@ -77,8 +76,8 @@ const handleUpload = async (files: FileList) => {
 
   if (file.type !== EPUB_TYPE) return
 
-  const arrayBuffer = await file.arrayBuffer()
-  const { md5, metadata, cover } = await getBookData(arrayBuffer)
+  const { arrayBuffer, epub } = await analysisEpub(file)
+  const { md5, metadata, cover } = await getBookData(arrayBuffer, epub)
   const intros = await bookIntroTable.get()
   const findBook = intros.find((intro) => intro.md5 === md5)
 
