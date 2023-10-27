@@ -18,7 +18,7 @@ import { bookIntroTable } from '@/data/indexedDB/bookIntro'
 import { bookFileTable } from '@/data/indexedDB/bookFile'
 
 const route = useRoute()
-const id = route.params.id as string
+const uid = route.params.uid as string
 
 const router = useRouter()
 
@@ -38,15 +38,15 @@ const flatChapter = (chapter: NavItem): NavItem[] => {
 }
 
 const fetchData = async () => {
-  const localIntro = await bookIntroTable.getByUid(id)
-  const localMetadata = await metadataTable.get(id)
-  const localFile = await bookFileTable.get(id)
+  const localIntro = await bookIntroTable.getByUid(uid)
+  const localMetadata = await metadataTable.get(uid)
+  const localFile = await bookFileTable.get(uid)
 
   if (localIntro) {
     const { title, cover } = localIntro
 
     book.value = {
-      uid: id,
+      uid,
       title,
       cover: cover ? URL.createObjectURL(cover) : undefined,
       ...localMetadata?.data

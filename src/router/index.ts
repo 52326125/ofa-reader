@@ -14,12 +14,12 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/book/detail/:id',
+      path: '/book/detail/:uid',
       name: 'book-detail',
       component: BookDetailView
     },
     {
-      path: '/book/:id',
+      path: '/book/:uid',
       name: 'reader',
       component: BookReader
     },
