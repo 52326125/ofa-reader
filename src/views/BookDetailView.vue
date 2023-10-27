@@ -5,7 +5,7 @@ import { type NavItem } from 'epubjs'
 import type { Book } from '@/interface/book'
 import { formatNullableString } from '@/utils/string'
 import { formatDate } from '@/utils/date'
-import { analysisEpub } from '@/utils/epub'
+import { analyzeEpub } from '@/utils/epub'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterItem from '@/components/shared/book/ChapterItem.vue'
@@ -29,12 +29,12 @@ const chapters = ref<NavItem[]>([])
 const epubInfo = ref<{ href: string; download: string } | null>(null)
 
 const flatChapter = (chapter: NavItem): NavItem[] => {
-  if (!chapter.subitems || chapter.subitems.length < 1) return [chapter]
+  if (!chapter.subitems || !chapter.subitems.length) return [chapter]
 
   let _chapters: NavItem[] = [chapter]
-  const subItems = chapter.subitems.map((subitem) => flatChapter(subitem)[0])
+  chapter.subitems.map((subitem) => _chapters.push(...flatChapter(subitem)))
 
-  return _chapters.concat(subItems)
+  return _chapters
 }
 
 const fetchData = async () => {
@@ -58,12 +58,14 @@ const fetchData = async () => {
       href: URL.createObjectURL(localFile.epub),
       download: localFile.epub.name
     }
-    const { epub } = await analysisEpub(localFile.epub)
+    const { epub } = await analyzeEpub(localFile.epub)
     const navigation = await epub.loaded.navigation
+    let _chapters: NavItem[] = []
     navigation.forEach((chapter) => {
-      chapters.value.push(...flatChapter(chapter))
+      _chapters.push(...flatChapter(chapter))
       return {}
     })
+    chapters.value = _chapters
   }
 }
 

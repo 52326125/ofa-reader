@@ -8,14 +8,13 @@ import { bookIntroTable, type AddBookIntro } from '@/data/indexedDB/bookIntro'
 import { bookFileTable } from '@/data/indexedDB/bookFile'
 import { metadataTable } from '@/data/indexedDB/metadata'
 import type { BookMetadata } from '@/utils/db'
+import { arrayBufferMD5 } from '@/utils/hash'
+import { EPUB_TYPE } from '@/utils/mimeType'
+import { analyzeEpub } from '@/utils/epub'
 
 import BaseInput from '@/components/base/BaseInput.vue'
 import BookCard from '@/components/shared/book/BookCard.vue'
 import UploadButton from '@/components/shared/UploadButton.vue'
-import { arrayBufferMD5 } from '@/utils/hash'
-import { EPUB_TYPE } from '@/utils/mimeType'
-import { analysisEpub } from '@/utils/epub'
-
 const filter = ref('')
 
 const router = useRouter()
@@ -76,7 +75,7 @@ const handleUpload = async (files: FileList) => {
 
   if (file.type !== EPUB_TYPE) return
 
-  const { arrayBuffer, epub } = await analysisEpub(file)
+  const { arrayBuffer, epub } = await analyzeEpub(file)
   const { md5, metadata, cover } = await getBookData(arrayBuffer, epub)
   const intros = await bookIntroTable.get()
   const findBook = intros.find((intro) => intro.md5 === md5)
