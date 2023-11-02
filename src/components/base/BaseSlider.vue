@@ -12,6 +12,8 @@ import VueSlider from 'vue-slider-component'
 
 :deep(.vue-slider-dot-handle)
   border-color: $primary
+  width: 1rem
+  height: 1rem
 
   &:has(.vue-slider:hover)
     border-color: $primary

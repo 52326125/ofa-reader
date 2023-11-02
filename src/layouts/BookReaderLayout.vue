@@ -5,7 +5,7 @@ import AppBar from '@/components/shared/appBar/AppBar.vue'
 <template>
   <div class="layout">
     <AppBar />
-    <main class="main">
+    <main>
       <Transition name="fade">
         <RouterView />
       </Transition>
@@ -14,8 +14,8 @@ import AppBar from '@/components/shared/appBar/AppBar.vue'
 </template>
 
 <style scoped lang="sass">
-.main
-  max-width: 1200px
-  padding-top: 2.5rem
-  margin: 0 auto
+.layout
+  display: grid
+  grid-template-columns: 1fr
+  grid-template-rows: 56px 1fr
 </style>

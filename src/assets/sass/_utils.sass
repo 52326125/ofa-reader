@@ -6,9 +6,16 @@
 .hidden
   display: none
 
+.layout
+  min-height: 100vh
+  background: $surface-container
+
 @each $color, $value in $colors
   .text-#{$color}
     color: $value
 
-@mixin border-shadow($width, $color)
+@mixin border-shadow($width: 1px, $color: $outline)
   box-shadow: 0 0 0 $width $color
+
+@mixin border-bottom-shadow($width: 1px, $color: $outline)
+  box-shadow: 0 $width 0 0 $color

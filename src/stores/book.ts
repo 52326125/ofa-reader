@@ -1,13 +1,14 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useNotificationStore } from '@/stores/notification'
-import type { Book, ReaderSetting } from '@/interface/book'
+import type { EpubInfo, Book as IBook, ReaderSetting } from '@/interface/book'
 import type { CreationNotification } from '@/interface/notification'
 
 export const useBookStore = defineStore('book', () => {
   const notificationStore = useNotificationStore()
   const { add, remove } = notificationStore
-  const books = ref<Book[] | null>(null)
+  const books = ref<IBook[] | null>(null)
+  const epubInfo = ref<Partial<EpubInfo>>({})
   const readerSetting = ref<ReaderSetting>({
     contents: false,
     fontFamily: '',
@@ -16,7 +17,7 @@ export const useBookStore = defineStore('book', () => {
     pageWidth: '1000'
   })
 
-  const upload = async (book: Book, cancelHandler: () => void) => {
+  const upload = async (book: IBook, cancelHandler: () => void) => {
     setTimeout(() => {
       const { title, cover, uid } = book
       const progress = 0
@@ -35,7 +36,7 @@ export const useBookStore = defineStore('book', () => {
     }, 0)
   }
 
-  const download = async (book: Book, cancelHandler: () => void) => {
+  const download = async (book: IBook, cancelHandler: () => void) => {
     setTimeout(() => {
       const { title, cover, uid } = book
       const progress = 0
@@ -60,5 +61,5 @@ export const useBookStore = defineStore('book', () => {
     }, 0)
   }
 
-  return { books, download, upload, cancel, readerSetting }
+  return { books, download, upload, cancel, readerSetting, epubInfo }
 })

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import BookReaderLayout from '@/layouts/BookReaderLayout.vue'
 </script>
 
 <template>
-  <DefaultLayout />
+  <BookReaderLayout v-if="$route.name === 'reader'" />
+  <DefaultLayout v-else />
 </template>
 
 <style lang="sass">

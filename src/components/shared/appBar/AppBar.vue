@@ -48,6 +48,8 @@ const toggleNotificationOpen = () =>
   justify-content: space-between
   align-items: center
   padding: .5rem 1rem
+  position: relative
+  z-index: 100
   @extend %app-bar
 
 .logo

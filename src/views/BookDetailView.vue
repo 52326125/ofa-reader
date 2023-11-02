@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { markRaw, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { type NavItem } from 'epubjs'
+import { useBookStore } from '@/stores/book'
 import type { Book } from '@/interface/book'
-import { formatNullableString } from '@/utils/string'
-import { formatDate } from '@/utils/date'
-import { analyzeEpub } from '@/utils/epub'
-
-import BaseButton from '@/components/base/BaseButton.vue'
-import ChapterItem from '@/components/shared/book/ChapterItem.vue'
-import BaseImg from '@/components/base/BaseImg.vue'
-import BaseSkeleton from '@/components/base/BaseSkeleton.vue'
-import DownloadButton from '@/components/shared/DownloadButton.vue'
-import bookCompletedImg from '@/assets/book_completed.png'
 import { metadataTable } from '@/data/indexedDB/metadata'
 import { bookIntroTable } from '@/data/indexedDB/bookIntro'
 import { bookFileTable } from '@/data/indexedDB/bookFile'
+import { formatNullableString } from '@/utils/string'
+import { formatDate } from '@/utils/date'
+import { analyzeEpub, getChapters } from '@/utils/epub'
+
+import BaseButton from '@/components/base/BaseButton.vue'
+import BaseImg from '@/components/base/BaseImg.vue'
+import BaseSkeleton from '@/components/base/BaseSkeleton.vue'
+import ChapterItem from '@/components/shared/book/ChapterItem.vue'
+import DownloadButton from '@/components/shared/DownloadButton.vue'
+import bookCompletedImg from '@/assets/book_completed.png'
 
 const route = useRoute()
 const uid = route.params.uid as string
@@ -25,17 +26,10 @@ const router = useRouter()
 const book = ref<Omit<Book, 'type'> | null>(null)
 const isBookCompleted = ref(false)
 const loading = ref(true)
-const chapters = ref<NavItem[]>([])
-const epubInfo = ref<{ href: string; download: string } | null>(null)
+const downloadInfo = ref<{ href: string; download: string } | null>(null)
 
-const flatChapter = (chapter: NavItem): NavItem[] => {
-  if (!chapter.subitems || !chapter.subitems.length) return [chapter]
-
-  let _chapters: NavItem[] = [chapter]
-  chapter.subitems.map((subitem) => _chapters.push(...flatChapter(subitem)))
-
-  return _chapters
-}
+const bookStore = useBookStore()
+const { epubInfo } = storeToRefs(bookStore)
 
 const fetchData = async () => {
   const localIntro = await bookIntroTable.getByUid(uid)
@@ -54,18 +48,13 @@ const fetchData = async () => {
   }
 
   if (localFile) {
-    epubInfo.value = {
+    downloadInfo.value = {
       href: URL.createObjectURL(localFile.epub),
       download: localFile.epub.name
     }
     const { epub } = await analyzeEpub(localFile.epub)
-    const navigation = await epub.loaded.navigation
-    let _chapters: NavItem[] = []
-    navigation.forEach((chapter) => {
-      _chapters.push(...flatChapter(chapter))
-      return {}
-    })
-    chapters.value = _chapters
+    const chapters = await getChapters(epub)
+    epubInfo.value = { epub: markRaw(epub), chapters }
   }
 }
 
@@ -115,11 +104,15 @@ onMounted(async () => {
         <RouterLink :to="`/book/${book?.uid}`">
           <BaseButton type="primary" :disabled="loading">開始閱讀</BaseButton>
         </RouterLink>
-        <DownloadButton :href="epubInfo?.href" :download="epubInfo?.download" />
+        <DownloadButton
+          :href="downloadInfo.href"
+          :download="downloadInfo.download"
+          v-if="downloadInfo"
+        />
       </div>
     </div>
     <div class="chapter-container" v-if="!loading">
-      <ChapterItem :chapters="chapters" />
+      <ChapterItem :chapters="epubInfo.chapters" v-if="epubInfo.chapters" />
     </div>
     <BaseSkeleton v-else height="200px" />
   </div>
