@@ -9,7 +9,7 @@ const linkChapter = (href: string) => epubInfo.value.rendition?.display(href)
 </script>
 
 <template>
-  <nav :class="{ hidden: readerSetting.contents }">
+  <nav :class="{ __hidden: readerSetting.contents }">
     <a
       href="#"
       class="nav-item"
@@ -36,6 +36,11 @@ nav
   overflow: auto
   padding: 0 .5rem
   flex-shrink: 0
+  transition: .3s all
+
+  &.__hidden
+    transform: translate(-240px)
+    width: 0
 
 .nav-item
   display: block

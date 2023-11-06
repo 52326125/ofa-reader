@@ -1,24 +1,16 @@
 <script setup lang="ts">
-import {
-  onMounted,
-  ref,
-  markRaw,
-  watchEffect,
-  computed,
-  watch,
-  toRefs
-} from 'vue'
+import { onMounted, ref, markRaw, watchEffect, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { onKeyStroke } from '@vueuse/core'
 import type { Book, Location } from 'epubjs'
 import { useBookStore } from '@/stores/book'
 import type { ISpine, IPackagingMetadataObject } from '@/interface/book'
+import { LAST_CHAPTER } from '@/data/localStorage'
 import { getBookData } from '@/utils/epub'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterNav from '@/components/book/reader/ChapterNav.vue'
-import ChapterProgressBar from '@/components/book/reader/ChapterProgressBar.vue'
 
 const chapterProgressBarDisabled = ref(true)
 
@@ -29,28 +21,28 @@ const route = useRoute()
 const router = useRouter()
 const uid = route.params.uid as string
 
-const PAGE_HEIGHT = 'calc(100vh - 56px - 40px)'
-const PAGE_HEIGHT__SCROLL = 'calc(100vh - 56px - 40px - 1px)'
+const PAGE_HEIGHT = 'calc(100vh - 56px)'
+const PAGE_HEIGHT__SCROLL = 'calc(100vh - 56px - 1px)'
 
 const renderOption = computed(() => {
-  const { pageWidth, displayMode } = toRefs(readerSetting.value)
+  const { pageWidth, displayMode } = readerSetting.value
 
   return {
-    width: `${pageWidth.value}px`,
-    height: displayMode.value === 'scroll' ? PAGE_HEIGHT__SCROLL : PAGE_HEIGHT,
-    spread: displayMode.value === 'single' ? 'none' : 'always',
-    flow: displayMode.value === 'scroll' ? 'scrolled' : 'paginated',
-    manager: displayMode.value === 'scroll' ? 'continuous' : 'default'
+    width: `${pageWidth}px`,
+    height: displayMode === 'scroll' ? PAGE_HEIGHT__SCROLL : PAGE_HEIGHT,
+    spread: displayMode === 'single' ? 'none' : 'always',
+    flow: displayMode === 'scroll' ? 'scrolled' : 'paginated',
+    manager: displayMode === 'scroll' ? 'continuous' : 'default'
   }
 })
 
 const epubTheme = computed(() => {
-  const { lineHeight, fontFamily } = toRefs(readerSetting.value)
+  const { lineHeight, fontFamily } = readerSetting.value
 
   return {
     '*': {
-      'line-height': `${lineHeight.value}rem !important`,
-      'font-family': `${fontFamily.value} !important`
+      'line-height': `${lineHeight}rem !important`,
+      'font-family': `${fontFamily} !important`
     }
   }
 })
@@ -58,13 +50,22 @@ const epubTheme = computed(() => {
 const renderEpub = (epub: Book) => {
   if (epubInfo.value.rendition) epubInfo.value.rendition.destroy()
 
+  const lastChapter = localStorage.getItem(LAST_CHAPTER)
+
   epubInfo.value.rendition = markRaw(epub.renderTo('book', renderOption.value))
   epubInfo.value.rendition.themes.default(epubTheme.value)
-  epubInfo.value.rendition.display()
+
+  if (lastChapter) {
+    epubInfo.value.rendition.display(lastChapter)
+  } else {
+    epubInfo.value.rendition.display()
+  }
 
   epubInfo.value.rendition.on('rendered', () => {
     const iframe = document.querySelector('iframe')?.contentDocument
     iframe?.addEventListener('click', toggleChapterControllerDisabled)
+    iframe?.addEventListener('keydown', leftPageControllerKeydown)
+    iframe?.addEventListener('keydown', rightPageControllerKeydown)
   })
 }
 
@@ -224,6 +225,7 @@ watchEffect(() => {
       (chapter) => chapter.href === href
     )
     epubInfo.value.currentChapter = href
+    localStorage.setItem(LAST_CHAPTER, href)
 
     if (findNavChapter) {
       epubInfo.value.currentNavChapter = findNavChapter
@@ -231,7 +233,7 @@ watchEffect(() => {
   })
 })
 
-watch(renderOption, async () => {
+watch([renderOption, epubTheme], async () => {
   const { epub } = await getBookData(uid)
   renderEpub(epub)
 })
@@ -244,7 +246,7 @@ onMounted(fetchData)
 
 <template>
   <div class="reader-container">
-    <ChapterNav :chapters="epubInfo.chapters" />
+    <ChapterNav />
     <div class="reader-area" v-if="epubInfo.rendition">
       <div class="reader-page">
         <div class="reader-page-controller">
@@ -274,7 +276,6 @@ onMounted(fetchData)
           class="reader-hidden"
         />
       </div>
-      <ChapterProgressBar :disabled="chapterProgressBarDisabled" />
     </div>
   </div>
 </template>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
+import { useRoute } from 'vue-router'
 import type { NavItem } from 'epubjs'
+import { LAST_CHAPTER } from '@/data/localStorage'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 
@@ -10,19 +12,30 @@ interface ChapterItemProps {
 
 const props = defineProps<ChapterItemProps>()
 const { chapters } = toRefs(props)
+
+const route = useRoute()
+const uid = route.params.uid as string
+
+const linkChapter = (href: string) => {
+  localStorage.setItem(LAST_CHAPTER, href)
+}
 </script>
 
 <template>
   <div>
     <div class="chapter-list">章節列表</div>
     <div class="chapter-item">
-      <BaseButton
+      <RouterLink
+        :to="`/book/${uid}`"
+        @click="linkChapter(chapter.href)"
         v-for="chapter in chapters"
         :key="chapter.id"
-        @click="chapter.href"
+        :title="chapter.label"
       >
-        {{ chapter.label }}
-      </BaseButton>
+        <BaseButton>
+          {{ chapter.label }}
+        </BaseButton>
+      </RouterLink>
     </div>
   </div>
 </template>
