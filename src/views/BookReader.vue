@@ -157,6 +157,7 @@ watchEffect(() => {
       (chapter) => chapter.href === href
     )
     const readHistory = readHistoryHelper.getByUid(uid)
+    let findNav
 
     if (readHistory) {
       epubInfo.value.currentChapter = {
@@ -175,6 +176,26 @@ watchEffect(() => {
 
     if (findNavChapter) {
       epubInfo.value.currentNavChapter = findNavChapter
+    } else {
+      for (let i = 0; i < spines.items.length; i++) {
+        const _findNav = epubInfo.value.chapters?.find((chapter) => {
+          const { href: _href } = chapter
+
+          if (
+            _href === spines.items[i].href ||
+            _href === spines.items[i].idref
+          ) {
+            return chapter
+          }
+        })
+
+        if (_findNav) findNav = _findNav
+
+        if (spines.items[i].href === href) {
+          epubInfo.value.currentNavChapter = findNav
+          break
+        }
+      }
     }
   })
 })
