@@ -31,23 +31,32 @@ export interface AddBook {
   cover: string
 }
 
+export interface SpineItem {
+  index: number
+  href: string
+  idref: string
+}
+
 export interface EpubInfo {
   epub: EpubBook
   rendition: Rendition
   chapters: NavItem[]
-  currentChapter: string
+  currentChapter: Omit<SpineItem, 'index'>
   currentNavChapter: NavItem
   pages: number
   direction: MetadataDirection
 }
 
 export interface ISpine extends Spine {
-  items: {
-    index: number
-    href: string
-  }[]
+  items: SpineItem[]
 }
 
 export interface IPackagingMetadataObject extends PackagingMetadataObject {
   direction: MetadataDirection | null
+}
+
+export interface ReadHistory {
+  uid: string
+  href: string
+  idref: string
 }

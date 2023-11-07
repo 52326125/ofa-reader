@@ -1,23 +1,31 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
 import { useRoute } from 'vue-router'
-import type { NavItem } from 'epubjs'
-import { LAST_CHAPTER } from '@/data/localStorage'
+import { readHistoryHelper } from '@/data/book/readHistory'
 
 import BaseButton from '@/components/base/BaseButton.vue'
+import type { ISpine } from '@/interface/book'
+import { useBookStore } from '@/stores/book'
+import { storeToRefs } from 'pinia'
 
-interface ChapterItemProps {
-  chapters: NavItem[]
-}
-
-const props = defineProps<ChapterItemProps>()
-const { chapters } = toRefs(props)
+const bookStore = useBookStore()
+const { epubInfo } = storeToRefs(bookStore)
 
 const route = useRoute()
 const uid = route.params.uid as string
 
 const linkChapter = (href: string) => {
-  localStorage.setItem(LAST_CHAPTER, href)
+  const spines = epubInfo.value.epub?.spine as ISpine
+  const findSpine = spines.items.find(
+    (spine) => spine.href === href || spine.idref === href
+  )
+
+  if (findSpine) {
+    readHistoryHelper.add({
+      uid,
+      href: findSpine.href,
+      idref: findSpine.idref
+    })
+  }
 }
 </script>
 
@@ -28,7 +36,7 @@ const linkChapter = (href: string) => {
       <RouterLink
         :to="`/book/${uid}`"
         @click="linkChapter(chapter.href)"
-        v-for="chapter in chapters"
+        v-for="chapter in epubInfo.chapters"
         :key="chapter.id"
         :title="chapter.label"
       >

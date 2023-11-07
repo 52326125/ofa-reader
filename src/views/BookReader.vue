@@ -6,13 +6,11 @@ import { onKeyStroke } from '@vueuse/core'
 import type { Book, Location } from 'epubjs'
 import { useBookStore } from '@/stores/book'
 import type { ISpine, IPackagingMetadataObject } from '@/interface/book'
-import { LAST_CHAPTER } from '@/data/localStorage'
+import { readHistoryHelper } from '@/data/book/readHistory'
 import { getBookData } from '@/utils/epub'
 
 import BaseButton from '@/components/base/BaseButton.vue'
 import ChapterNav from '@/components/book/reader/ChapterNav.vue'
-
-const chapterProgressBarDisabled = ref(true)
 
 const bookStore = useBookStore()
 const { epubInfo, readerSetting } = storeToRefs(bookStore)
@@ -20,6 +18,8 @@ const { epubInfo, readerSetting } = storeToRefs(bookStore)
 const route = useRoute()
 const router = useRouter()
 const uid = route.params.uid as string
+
+const epubRef = ref<Document | null>(null)
 
 const PAGE_HEIGHT = 'calc(100vh - 56px)'
 const PAGE_HEIGHT__SCROLL = 'calc(100vh - 56px - 1px)'
@@ -50,22 +50,23 @@ const epubTheme = computed(() => {
 const renderEpub = (epub: Book) => {
   if (epubInfo.value.rendition) epubInfo.value.rendition.destroy()
 
-  const lastChapter = localStorage.getItem(LAST_CHAPTER)
-
+  const readHistory = readHistoryHelper.getByUid(uid)
   epubInfo.value.rendition = markRaw(epub.renderTo('book', renderOption.value))
   epubInfo.value.rendition.themes.default(epubTheme.value)
 
-  if (lastChapter) {
-    epubInfo.value.rendition.display(lastChapter)
+  if (readHistory) {
+    try {
+      epubInfo.value.rendition.display(readHistory.href)
+    } catch {
+      epubInfo.value.rendition.display(readHistory.idref)
+    }
   } else {
     epubInfo.value.rendition.display()
   }
 
   epubInfo.value.rendition.on('rendered', () => {
     const iframe = document.querySelector('iframe')?.contentDocument
-    iframe?.addEventListener('click', toggleChapterControllerDisabled)
-    iframe?.addEventListener('keydown', leftPageControllerKeydown)
-    iframe?.addEventListener('keydown', rightPageControllerKeydown)
+    epubRef.value = iframe || null
   })
 }
 
@@ -86,110 +87,37 @@ const fetchData = async () => {
   }
 }
 
-const toggleChapterControllerDisabled = () => {
-  chapterProgressBarDisabled.value = !chapterProgressBarDisabled.value
-}
-
 const nextPage = () => epubInfo.value.rendition?.next()
 const prevPage = () => epubInfo.value.rendition?.prev()
 
-const nextChapterByNav = () => {
+const nextChapter = () => {
   if (!epubInfo.value.chapters) return
 
-  const { chapters, currentChapter, rendition } = epubInfo.value
+  const { chapters, currentNavChapter, rendition } = epubInfo.value
 
   for (let i = 0; i < chapters.length - 1; i++) {
     const nextChapter = chapters[i + 1]
 
-    if (chapters[i].href === currentChapter) {
+    if (chapters[i].href === currentNavChapter?.href) {
       rendition?.display(nextChapter.href)
       break
     }
   }
 }
 
-const prevChapterByNav = () => {
-  if (!epubInfo.value.chapters) return
-
-  const { chapters, currentChapter, rendition } = epubInfo.value
-
-  for (let i = 1; i < chapters.length; i++) {
-    const prevChapter = chapters[i - 1]
-
-    if (chapters[i].href === currentChapter) {
-      rendition?.display(prevChapter.href)
-      break
-    }
-  }
-}
-
-const nextChapterByContent = () => {
-  if (!epubInfo.value.chapters) return
-
-  const { chapters, currentChapter, rendition, epub } = epubInfo.value
-  const { items } = epub?.spine as ISpine
-  const findSpine = items.find((spine) => spine.href === currentChapter)
-
-  if (!findSpine) return
-
-  for (let i = findSpine.index; i < items.length; i++) {
-    const findChapter = chapters.find(
-      (chapter) => chapter.href === items[i].href
-    )
-
-    if (findChapter) {
-      rendition?.display(findChapter.href)
-      break
-    }
-  }
-}
-
-const prevChapterByContent = () => {
-  if (!epubInfo.value.chapters) return
-
-  const { chapters, currentChapter, rendition, epub } = epubInfo.value
-  const { items } = epub?.spine as ISpine
-  const findSpine = items.find((spine) => spine.href === currentChapter)
-  let findChapter
-
-  if (!findSpine) return
-
-  for (let i = findSpine.index; i >= 0; i--) {
-    findChapter = chapters.find((chapter) => chapter.href === items[i].href)
-
-    if (findChapter) break
-  }
-
-  for (let i = 1; i < chapters.length; i++) {
-    const prevChapter = chapters[i - 1]
-
-    if (chapters[i].href === findChapter?.href) {
-      rendition?.display(prevChapter.href)
-      break
-    }
-  }
-}
-
-const nextChapter = () => {
-  if (!epubInfo.value.chapters) return
-
-  const { chapters, currentChapter } = epubInfo.value
-  const findNavChapter = chapters.find(
-    (chapter) => chapter.href === currentChapter
-  )
-
-  findNavChapter ? nextChapterByNav() : nextChapterByContent()
-}
-
 const prevChapter = () => {
   if (!epubInfo.value.chapters) return
 
-  const { chapters, currentChapter } = epubInfo.value
-  const findNavChapter = chapters.find(
-    (chapter) => chapter.href === currentChapter
-  )
+  const { chapters, currentNavChapter, rendition } = epubInfo.value
 
-  findNavChapter ? prevChapterByNav() : prevChapterByContent()
+  for (let i = 1; i < chapters.length; i++) {
+    const prevChapter = chapters[i - 1]
+
+    if (chapters[i].href === currentNavChapter?.href) {
+      rendition?.display(prevChapter.href)
+      break
+    }
+  }
 }
 
 const leftPageControllerClick = () => {
@@ -221,11 +149,29 @@ watchEffect(() => {
 
   epubInfo.value.rendition.on('relocated', (location: Location) => {
     const { href } = location.start
+    const spines = epubInfo.value.epub?.spine as ISpine
+    const findSpine = spines.items.find(
+      (spine) => spine.href === href || spine.idref === href
+    )
     const findNavChapter = epubInfo.value.chapters?.find(
       (chapter) => chapter.href === href
     )
-    epubInfo.value.currentChapter = href
-    localStorage.setItem(LAST_CHAPTER, href)
+    const readHistory = readHistoryHelper.getByUid(uid)
+
+    if (readHistory) {
+      epubInfo.value.currentChapter = {
+        href: readHistory.href,
+        idref: readHistory.idref
+      }
+    }
+
+    if (findSpine) {
+      readHistoryHelper.add({
+        uid,
+        href: findSpine.href,
+        idref: findSpine.idref
+      })
+    }
 
     if (findNavChapter) {
       epubInfo.value.currentNavChapter = findNavChapter
@@ -240,6 +186,8 @@ watch([renderOption, epubTheme], async () => {
 
 onKeyStroke('ArrowLeft', leftPageControllerKeydown)
 onKeyStroke('ArrowRight', rightPageControllerKeydown)
+onKeyStroke('ArrowLeft', leftPageControllerKeydown, { target: epubRef })
+onKeyStroke('ArrowRight', rightPageControllerKeydown, { target: epubRef })
 
 onMounted(fetchData)
 </script>
@@ -270,11 +218,6 @@ onMounted(fetchData)
             </template>
           </BaseButton>
         </div>
-        <div
-          id="hidden"
-          :style="{ width: `${readerSetting.pageWidth}px` }"
-          class="reader-hidden"
-        />
       </div>
     </div>
   </div>
@@ -296,12 +239,6 @@ onMounted(fetchData)
   justify-content: center
   align-items: center
   flex: 1
-
-.reader-hidden
-  position: absolute
-  left: 0
-  top: 0
-  z-index: -1
 
 article
   background: $surface-container-high

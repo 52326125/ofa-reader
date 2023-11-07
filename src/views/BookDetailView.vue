@@ -112,7 +112,7 @@ onMounted(async () => {
       </div>
     </div>
     <div class="chapter-container" v-if="!loading">
-      <ChapterItem :chapters="epubInfo.chapters" v-if="epubInfo.chapters" />
+      <ChapterItem />
     </div>
     <BaseSkeleton v-else height="200px" />
   </div>

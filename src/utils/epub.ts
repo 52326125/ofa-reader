@@ -1,5 +1,4 @@
 import Epub, { Book, type NavItem } from 'epubjs'
-
 import { bookFileTable } from '@/data/indexedDB/bookFile'
 
 const flatChapter = (chapter: NavItem): NavItem[] => {

@@ -1,11 +1,23 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
+import type { ISpine } from '@/interface/book'
 
 const bookStore = useBookStore()
 const { readerSetting, epubInfo } = storeToRefs(bookStore)
 
-const linkChapter = (href: string) => epubInfo.value.rendition?.display(href)
+const linkChapter = (href: string) => {
+  const spines = epubInfo.value.epub?.spine as ISpine
+  const findSpine = spines.items.find(
+    (spine) => spine.href === href || spine.idref === href
+  )
+
+  try {
+    epubInfo.value.rendition?.display(findSpine?.href)
+  } catch {
+    epubInfo.value.rendition?.display(findSpine?.idref)
+  }
+}
 </script>
 
 <template>
