@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { toRefs, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useBookStore } from '@/stores/book'
 
@@ -17,7 +17,7 @@ const { readerSetting } = storeToRefs(bookStore)
 
 const handleChange = (value: string) => {
   const _value = Number(value)
-  const navWidth = !readerSetting.value.contents ? 240 : 0
+  const navWidth = readerSetting.value.contents ? 240 : 0
   const maxWidth = window.innerWidth - navWidth - 200
 
   if (_value < 0) {
@@ -30,6 +30,10 @@ const handleChange = (value: string) => {
 
   emit('update:modelValue', value)
 }
+
+watchEffect(() => {
+  handleChange(readerSetting.value.pageWidth.toString())
+})
 </script>
 <template>
   <div class="setting-wrapper">

@@ -24,7 +24,7 @@ const linkChapter = (href: string) => {
   <nav :class="{ __hidden: !readerSetting.contents }">
     <a
       href="#"
-      class="nav-item"
+      class="nav-item ellipsis"
       :class="[
         chapter.href === epubInfo.currentNavChapter?.href
           ? 'nav-item__active'
@@ -33,6 +33,7 @@ const linkChapter = (href: string) => {
       v-for="chapter in epubInfo.chapters"
       :key="chapter.id"
       @click="linkChapter(chapter.href)"
+      :title="chapter.label"
     >
       {{ chapter.label }}
     </a>
