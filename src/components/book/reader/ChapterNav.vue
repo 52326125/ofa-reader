@@ -21,7 +21,7 @@ const linkChapter = (href: string) => {
 </script>
 
 <template>
-  <nav :class="{ __hidden: readerSetting.contents }">
+  <nav :class="{ __hidden: !readerSetting.contents }">
     <a
       href="#"
       class="nav-item"
