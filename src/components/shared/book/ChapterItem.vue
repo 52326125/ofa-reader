@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { readHistoryHelper } from '@/data/book/readHistory'
-
-import BaseButton from '@/components/base/BaseButton.vue'
+import { storeToRefs } from 'pinia'
+import { addReadHistory } from '@/data/book/readHistory'
 import type { ISpine } from '@/interface/book'
 import { useBookStore } from '@/stores/book'
-import { storeToRefs } from 'pinia'
+
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const bookStore = useBookStore()
 const { epubInfo } = storeToRefs(bookStore)
@@ -20,7 +20,7 @@ const linkChapter = (href: string) => {
   )
 
   if (findSpine) {
-    readHistoryHelper.add({
+    addReadHistory({
       uid,
       href: findSpine.href,
       idref: findSpine.idref

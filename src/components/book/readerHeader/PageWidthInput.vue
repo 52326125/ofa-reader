@@ -24,9 +24,10 @@ const handleChange = (value: string) => {
     value = '0'
   } else if (_value > maxWidth) {
     value = `${maxWidth}`
+  } else {
+    value = `${_value}`
   }
 
-  value = _value.toString()
   emit('update:modelValue', value)
 }
 </script>

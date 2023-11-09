@@ -6,7 +6,7 @@ import { onKeyStroke } from '@vueuse/core'
 import type { Book, Location } from 'epubjs'
 import { useBookStore } from '@/stores/book'
 import type { ISpine, IPackagingMetadataObject } from '@/interface/book'
-import { readHistoryHelper } from '@/data/book/readHistory'
+import { getReadHistoryByUid, addReadHistory } from '@/data/book/readHistory'
 import { getBookData } from '@/utils/epub'
 
 import BaseButton from '@/components/base/BaseButton.vue'
@@ -23,6 +23,10 @@ const epubRef = ref<Document | null>(null)
 
 const PAGE_HEIGHT = 'calc(100vh - 56px)'
 const PAGE_HEIGHT__SCROLL = 'calc(100vh - 56px - 1px)'
+
+const directionIsLtr = computed(() => {
+  return epubInfo.value.direction === 'ltr'
+})
 
 const renderOption = computed(() => {
   const { pageWidth, displayMode } = readerSetting.value
@@ -42,7 +46,8 @@ const epubTheme = computed(() => {
   return {
     '*': {
       'line-height': `${lineHeight}rem !important`,
-      'font-family': `${fontFamily} !important`
+      'font-family': `${fontFamily} !important`,
+      'writing-mode': directionIsLtr.value ? '' : 'tb-rl'
     }
   }
 })
@@ -50,7 +55,7 @@ const epubTheme = computed(() => {
 const renderEpub = (epub: Book) => {
   if (epubInfo.value.rendition) epubInfo.value.rendition.destroy()
 
-  const readHistory = readHistoryHelper.getByUid(uid)
+  const readHistory = getReadHistoryByUid(uid)
   epubInfo.value.rendition = markRaw(epub.renderTo('book', renderOption.value))
   epubInfo.value.rendition.themes.default(epubTheme.value)
 
@@ -72,6 +77,16 @@ const renderEpub = (epub: Book) => {
 
 const fetchData = async () => {
   try {
+    if (epubInfo.value.epub) {
+      const metadata = (await epubInfo.value.epub.loaded
+        .metadata) as IPackagingMetadataObject
+      const { direction } = metadata
+      epubInfo.value.direction = direction || 'ltr'
+
+      renderEpub(epubInfo.value.epub as Book)
+      return
+    }
+
     const { epub, chapters } = await getBookData(uid)
     const metadata = (await epub.loaded.metadata) as IPackagingMetadataObject
     const { direction } = metadata
@@ -121,16 +136,16 @@ const prevChapter = () => {
 }
 
 const leftPageControllerClick = () => {
-  epubInfo.value.direction === 'ltr' ? prevPage() : nextPage()
+  directionIsLtr.value ? prevPage() : nextPage()
 }
 
 const rightPageControllerClick = () => {
-  epubInfo.value.direction === 'ltr' ? nextPage() : prevPage()
+  directionIsLtr.value ? nextPage() : prevPage()
 }
 
 const leftPageControllerKeydown = (e: KeyboardEvent) => {
   if (e.ctrlKey || e.altKey) {
-    epubInfo.value.direction === 'ltr' ? prevChapter() : nextChapter()
+    directionIsLtr.value ? prevChapter() : nextChapter()
   } else {
     leftPageControllerClick()
   }
@@ -138,7 +153,7 @@ const leftPageControllerKeydown = (e: KeyboardEvent) => {
 
 const rightPageControllerKeydown = (e: KeyboardEvent) => {
   if (e.ctrlKey || e.altKey) {
-    epubInfo.value.direction === 'ltr' ? nextChapter() : prevChapter()
+    directionIsLtr.value ? nextChapter() : prevChapter()
   } else {
     rightPageControllerClick()
   }
@@ -156,7 +171,7 @@ watchEffect(() => {
     const findNavChapter = epubInfo.value.chapters?.find(
       (chapter) => chapter.href === href
     )
-    const readHistory = readHistoryHelper.getByUid(uid)
+    const readHistory = getReadHistoryByUid(uid)
     let findNav
 
     if (readHistory) {
@@ -167,7 +182,7 @@ watchEffect(() => {
     }
 
     if (findSpine) {
-      readHistoryHelper.add({
+      addReadHistory({
         uid,
         href: findSpine.href,
         idref: findSpine.idref
@@ -201,8 +216,7 @@ watchEffect(() => {
 })
 
 watch([renderOption, epubTheme], async () => {
-  const { epub } = await getBookData(uid)
-  renderEpub(epub)
+  renderEpub(epubInfo.value.epub as Book)
 })
 
 onKeyStroke('ArrowLeft', leftPageControllerKeydown)
