@@ -17,7 +17,7 @@ const { readerSetting } = storeToRefs(bookStore)
 
 const handleChange = (value: string) => {
   const _value = Number(value)
-  const navWidth = readerSetting.value.contents ? 240 : 0
+  const navWidth = !readerSetting.value.contents ? 240 : 0
   const maxWidth = window.innerWidth - navWidth - 200
 
   if (_value < 0) {
