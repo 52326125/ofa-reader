@@ -1,0 +1,151 @@
+$primary-0: #000000
+$primary-10: #2A1800
+$primary-20: #462B00
+$primary-30: #643F00
+$primary-40: #845400
+$primary-50: #A56B00
+$primary-60: #C4831A
+$primary-70: #E39D35
+$primary-80: #FFB958
+$primary-90: #FFDDB5
+$primary-95: #FFEEDD
+$primary-99: #FFFBFF
+$primary-100: #FFFFFF
+
+$secondary-0: #000000
+$secondary-10: #351000
+$secondary-20: #571E00
+$secondary-30: #7A3004
+$secondary-40: #99461B
+$secondary-50: #B85E31
+$secondary-60: #D87747
+$secondary-70: #F8905F
+$secondary-80: #FFB695
+$secondary-90: #FFDBCC
+$secondary-95: #FFEDE6
+$secondary-99: #FFFBFF
+$secondary-100: #FFFFFF
+
+$tertiary-0: #000000
+$tertiary-10: #111F03
+$tertiary-20: #263514
+$tertiary-30: #3B4C29
+$tertiary-40: #53643E
+$tertiary-50: #6B7D55
+$tertiary-60: #84976D
+$tertiary-70: #9EB286
+$tertiary-80: #BACDA0
+$tertiary-90: #D5EABA
+$tertiary-95: #E3F8C7
+$tertiary-99: #F8FFE9
+$tertiary-100: #FFFFFF
+
+$error-0: #000000
+$error-10: #410002
+$error-20: #690005
+$error-30: #93000A
+$error-40: #BA1A1A
+$error-50: #DE3730
+$error-60: #FF5449
+$error-70: #FF897D
+$error-80: #FFB4AB
+$error-90: #FFDAD6
+$error-95: #FFEDEA
+$error-99: #FFFBFF
+$error-100: #FFFFFF
+
+$neutral-0: #000000
+$neutral-10: #1F1B16
+$neutral-20: #35302A
+$neutral-30: #4B4640
+$neutral-40: #645D57
+$neutral-50: #7D766F
+$neutral-60: #978F88
+$neutral-70: #B2AAA2
+$neutral-80: #CEC5BD
+$neutral-90: #EBE1D9
+$neutral-95: #F9EFE7
+$neutral-99: #FBFCFE
+$neutral-100: #FFFFFF
+
+$neutral-variant-0: #000000
+$neutral-variant-10: #221A10
+$neutral-variant-20: #382F24
+$neutral-variant-30: #504539
+$neutral-variant-40: #685C50
+$neutral-variant-50: #827568
+$neutral-variant-60: #9C8E80
+$neutral-variant-70: #B8A99A
+$neutral-variant-80: #D4C4B5
+$neutral-variant-90: #F1E0D0
+$neutral-variant-95: #FFEEDE
+$neutral-variant-99: #FFFBFF
+$neutral-variant-100: #FFFFFF
+
+$primary: $primary-40
+$on-primary: $primary-100
+$primary-container: $primary-90
+$on-primary-container: $primary-10
+
+$secondary: $secondary-40
+$on-secondary: $secondary-100
+$secondary-container: $secondary-90
+$on-secondary-container: $secondary-10
+
+$tertiary: $tertiary-40
+$on-tertiary: $tertiary-100
+$tertiary-container: $tertiary-90
+$on-tertiary-container: $tertiary-10
+
+$error: $error-40
+$on-error: $error-100
+$error-container: $error-90
+$on-error-container: $error-10
+
+$background: $neutral-99
+$on-background: $neutral-10
+$surface: $neutral-99
+$on-surface: $neutral-10
+
+$surface-variant: $neutral-variant-90
+$on-surface-variant: $neutral-variant-30
+$outline: $neutral-variant-50
+$outline-variant: $neutral-variant-80
+$surface-container: #FFF8F4
+$surface-container-high: #F0E6DE
+
+$colors: ("primary": $primary, "on-primary": $primary-100, "secondary": $secondary-40, "on-secondary": $secondary-100, "tertiary": $tertiary-40, "on-tertiary": $tertiary-100, "error": $error-40, "on-error": $error-100, "surface": $neutral-99, "on-surface": $neutral-10, "surface-variant": $neutral-variant-90, "on-surface-variant": $neutral-variant-30, "outline": $neutral-variant-50,)
+
+$shadow-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30)
+$shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.30), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)
+$shadow-3: $shadow-2
+$shadow-4: 0px 2px 3px 0px rgba(0, 0, 0, 0.30), 0px 6px 10px 4px rgba(0, 0, 0, 0.15)
+$shadow-5: 0px 4px 4px 0px rgba(0, 0, 0, 0.30), 0px 8px 12px 6px rgba(0, 0, 0, 0.15)
+
+$dark-shadow-1: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 1px 3px 1px rgba(0, 0, 0, 0.15)
+$dark-shadow-2: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.15)
+$dark-shadow-3: $shadow-3
+$dark-shadow-4: $shadow-4
+$dark-shadow-5: $shadow-5
+
+%primary-hover
+  background: rgba($primary, .08)
+
+%opacity-hover
+  opacity: .92
+
+%btn-primary-focus
+  @extend %opacity-hover
+  box-shadow: $shadow-1
+
+%disabled
+  cursor: not-allowed
+  color: rgba($on-surface, .38) !important
+
+%app-bar
+  background: $surface-container-high
+  box-shadow: $shadow-2
+
+%icon
+  color: $on-surface
+  line-height: 1
